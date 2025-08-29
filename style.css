@@ -351,28 +351,88 @@ footer a:hover {
 }
 
 /* NUEVO: Estilos de calculadora de precios */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.pricing-card {
+    background-color: #ffffff0d;
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.pricing-card-result {
+    text-align: center;
+}
+
+.pricing-title {
+    color: var(--light-slate);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.pricing-subtitle {
+    color: var(--slate);
+    margin-bottom: 1.25rem;
+}
+
 .pricing-input {
     width: 100%;
-    margin: 0.5rem 0 1rem 0;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--slate);
-    background-color: #0e244a;
+    border-radius: 16px;
+    border: 2px solid rgba(204, 214, 246, 0.4);
+    background-color: #e6f1ff0d;
     color: var(--light-slate);
+    outline: none;
 }
 
-.pricing-total {
-    margin-top: 0.75rem;
-    padding: 0.75rem 1rem;
-    background-color: #0e244a;
-    border-left: 4px solid var(--orange);
-    border-radius: 8px;
-    color: var(--light-slate);
+.pricing-input-lg {
+    padding: 1.25rem 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.pricing-input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.15);
+}
+
+.result-box {
+    background-color: #e6f1ff0d;
+    border: 2px solid rgba(204, 214, 246, 0.4);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.result-amount {
+    color: #4c64b3;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.result-iva {
+    color: var(--orange);
     font-weight: 700;
+    margin-top: 0.5rem;
 }
 
-.pricing-note {
-    font-size: 0.9rem;
-    color: var(--slate);
-    margin-bottom: 0.5rem;
+.pricing-btn {
+    display: inline-block;
+    margin-top: 1.25rem;
+    background-color: #2a3b6b;
+    color: #e6f1ff;
+    padding: 0.9rem 1.5rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pricing-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 140, 0, 0.25);
 }

@@ -142,6 +142,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // NUEVO: Calculadora de precios
 const inputColaboradores = document.getElementById('num-colaboradores');
 const resultadoPrecio = document.getElementById('resultado-precio');
+const resultadoMonto = document.getElementById('resultado-monto');
 
 function formatCurrencyMXN(value) {
     return value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
@@ -156,7 +157,8 @@ function calcularPrecio(colaboradores) {
 function actualizarResultado() {
     const valor = Number(inputColaboradores?.value || 0);
     const total = calcularPrecio(valor);
-    if (resultadoPrecio) {
+    if (resultadoMonto) resultadoMonto.textContent = `${formatCurrencyMXN(total)}`;
+    if (resultadoPrecio && !resultadoMonto) {
         resultadoPrecio.textContent = `Total mensual: ${formatCurrencyMXN(total)} + IVA`;
     }
 }
@@ -164,4 +166,7 @@ function actualizarResultado() {
 if (inputColaboradores) {
     ['input', 'change'].forEach(evt => inputColaboradores.addEventListener(evt, actualizarResultado));
 }
+
+// Calcular al cargar si existe el campo
+actualizarResultado();
 
