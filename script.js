@@ -139,10 +139,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// NUEVO: Calculadora de precios
-const inputColaboradores = document.getElementById('num-colaboradores');
-const resultadoPrecio = document.getElementById('resultado-precio');
-const resultadoMonto = document.getElementById('resultado-monto');
+// MODIFICADO: Se elimina calculadora dinámica (precio fijo)
+const inputColaboradores = null;
+const resultadoPrecio = null;
+const resultadoMonto = null;
 
 function formatCurrencyMXN(value) {
     return value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
@@ -163,10 +163,5 @@ function actualizarResultado() {
     }
 }
 
-if (inputColaboradores) {
-    ['input', 'change'].forEach(evt => inputColaboradores.addEventListener(evt, actualizarResultado));
-}
-
-// Calcular al cargar si existe el campo
-actualizarResultado();
+// Ya no hay cálculo dinámico
 
