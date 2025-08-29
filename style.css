@@ -349,3 +349,30 @@ footer a:hover {
     text-align: center;
     margin-top: 4rem;
 }
+
+/* NUEVO: Estilos de calculadora de precios */
+.pricing-input {
+    width: 100%;
+    margin: 0.5rem 0 1rem 0;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--slate);
+    background-color: #0e244a;
+    color: var(--light-slate);
+}
+
+.pricing-total {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background-color: #0e244a;
+    border-left: 4px solid var(--orange);
+    border-radius: 8px;
+    color: var(--light-slate);
+    font-weight: 700;
+}
+
+.pricing-note {
+    font-size: 0.9rem;
+    color: var(--slate);
+    margin-bottom: 0.5rem;
+}

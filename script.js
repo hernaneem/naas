@@ -138,3 +138,30 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         });
     });
 });
+
+// NUEVO: Calculadora de precios
+const inputColaboradores = document.getElementById('num-colaboradores');
+const resultadoPrecio = document.getElementById('resultado-precio');
+
+function formatCurrencyMXN(value) {
+    return value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
+}
+
+function calcularPrecio(colaboradores) {
+    if (!Number.isFinite(colaboradores) || colaboradores < 0) return 0;
+    const tarifa = colaboradores > 100 ? 50 : 75;
+    return colaboradores * tarifa;
+}
+
+function actualizarResultado() {
+    const valor = Number(inputColaboradores?.value || 0);
+    const total = calcularPrecio(valor);
+    if (resultadoPrecio) {
+        resultadoPrecio.textContent = `Total mensual: ${formatCurrencyMXN(total)} + IVA`;
+    }
+}
+
+if (inputColaboradores) {
+    ['input', 'change'].forEach(evt => inputColaboradores.addEventListener(evt, actualizarResultado));
+}
+
