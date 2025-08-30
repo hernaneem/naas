@@ -59,6 +59,13 @@ nav {
     text-decoration: none;
 }
 
+/* NUEVO: Soporte para imagen de logo */
+.logo img {
+    height: 28px;
+    width: auto;
+    display: block;
+}
+
 nav ul {
     list-style: none;
     display: flex;
