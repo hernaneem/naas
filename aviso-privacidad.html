@@ -7,27 +7,42 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
+    <!-- Header -->
     <header>
         <nav class="container">
-            <a href="index.html" class="logo">NaaS</a>
-            <ul>
-                <li><a href="index.html#features">Características</a></li>
+            <a href="index.html" class="logo">
+                <img src="imagenes/logos/NAAS-Logo-dark.png" alt="NaaS" />
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#features">Plataforma</a></li>
+                <li><a href="index.html#metrics">Resultados</a></li>
+                <li><a href="index.html#pricing">Precios</a></li>
                 <li><a href="index.html#about">Nosotros</a></li>
-                <li><a href="index.html#contact">Contacto</a></li>
-                <li><a href="#" class="cta-button">Iniciar Sesión</a></li>
+                <li class="nav-cta">
+                    <a href="https://naas-client-prod.s3.us-east-1.amazonaws.com/index.html#/login" class="btn-outline">Iniciar Sesión</a>
+                    <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary" target="_blank">Solicita Demo</a>
+                </li>
             </ul>
+            <button class="hamburger" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
     </header>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay"></div>
 
     <main>
         <section class="privacy-notice">
             <div class="container">
                 <h1>Aviso de Privacidad</h1>
-                
+
                 <div class="company-info">
                     <h2>SISTEMA DE NOMINAS NAAS S. DE R.L. DE C.V.</h2>
                     <p><strong>RFC:</strong> SNN210901T18</p>
@@ -55,7 +70,7 @@
                     <h3>DATOS PERSONALES QUE SE RECABAN</h3>
                     <p>Para las finalidades señaladas en el presente aviso de privacidad, podemos recabar sus datos personales de las siguientes formas: directamente de usted, de su empleador, o a través de otras fuentes permitidas por la ley.</p>
                     <p>Los datos personales que recabamos son:</p>
-                    
+
                     <div class="data-category">
                         <h4>Datos de identificación:</h4>
                         <ul>
@@ -100,11 +115,11 @@
                 <div class="privacy-section">
                     <h3>DERECHOS ARCO</h3>
                     <p>Usted tiene derecho a conocer qué datos personales tenemos de usted, para qué los utilizamos y las condiciones del uso que les damos (Acceso). Asimismo, es su derecho solicitar la corrección de su información personal en caso de que esté desactualizada, sea inexacta o incompleta (Rectificación); que la eliminemos de nuestros registros o bases de datos cuando considere que la misma no está siendo utilizada adecuadamente (Cancelación); así como oponerse al uso de sus datos personales para fines específicos (Oposición). Estos derechos se conocen como derechos ARCO.</p>
-                    
+
                     <p>Para el ejercicio de cualquiera de los derechos ARCO, deberá presentar la solicitud respectiva a través del siguiente medio:</p>
                     <p><strong>Correo electrónico:</strong> hernan@nominaas.com</p>
                     <p><strong>Domicilio:</strong> Montes Urales 755, Piso 5 Of. 5656, Lomas de Chapultepec, Miguel Hidalgo, CDMX, CP. 11000</p>
-                    
+
                     <p>Su solicitud de derechos ARCO deberá contener:</p>
                     <ol>
                         <li>Nombre del titular y domicilio</li>
@@ -149,16 +164,53 @@
                 </div>
 
                 <div class="back-link">
-                    <a href="index.html" class="cta-main-button">Regresar al Inicio</a>
+                    <a href="index.html" class="btn-primary btn-primary-lg">Regresar al Inicio</a>
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 NaaS. Todos los derechos reservados. | <a href="aviso-privacidad.html">Aviso de Privacidad</a></p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <img src="imagenes/logos/NAAS-Logo-white (1).png" alt="NaaS" />
+                    </a>
+                    <p>Plataforma integral de nómina diseñada para las empresas en México. Automatiza, cumple y crece.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="index.html#features">Nómina</a></li>
+                        <li><a href="index.html#features">Gestión de Talento</a></li>
+                        <li><a href="index.html#features">Beneficios</a></li>
+                        <li><a href="index.html#pricing">Precios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="index.html#about">Nosotros</a></li>
+                        <li><a href="aviso-privacidad.html">Aviso de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="mailto:hernan@nominaas.com">hernan@nominaas.com</a></li>
+                        <li><a href="https://cal.com/hernaneem/reunion-naas" target="_blank">Agendar reunión</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 NaaS. Todos los derechos reservados.</p>
+                <a href="aviso-privacidad.html">Aviso de Privacidad</a>
+            </div>
         </div>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,167 +1,147 @@
-console.log('Script cargado. ¡Hola, NaaS!');
+// ============================================
+// Header scroll effect
+// ============================================
+const header = document.querySelector('header');
 
-/*
-============================================
-Particles JS
-============================================
-*/
-particlesJS('particles-js', {
-  "particles": {
-    "number": {
-      "value": 80,
-      "density": {
-        "enable": true,
-        "value_area": 800
-      }
-    },
-    "color": {
-      "value": "#ffffff"
-    },
-    "shape": {
-      "type": "circle",
-      "stroke": {
-        "width": 0,
-        "color": "#000000"
-      },
-      "polygon": {
-        "nb_sides": 5
-      }
-    },
-    "opacity": {
-      "value": 0.5,
-      "random": false,
-      "anim": {
-        "enable": false,
-        "speed": 1,
-        "opacity_min": 0.1,
-        "sync": false
-      }
-    },
-    "size": {
-      "value": 3,
-      "random": true,
-      "anim": {
-        "enable": false,
-        "speed": 40,
-        "size_min": 0.1,
-        "sync": false
-      }
-    },
-    "line_linked": {
-      "enable": true,
-      "distance": 150,
-      "color": "#ffffff",
-      "opacity": 0.4,
-      "width": 1
-    },
-    "move": {
-      "enable": true,
-      "speed": 6,
-      "direction": "none",
-      "random": false,
-      "straight": false,
-      "out_mode": "out",
-      "bounce": false,
-      "attract": {
-        "enable": false,
-        "rotateX": 600,
-        "rotateY": 1200
-      }
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
     }
-  },
-  "interactivity": {
-    "detect_on": "canvas",
-    "events": {
-      "onhover": {
-        "enable": true,
-        "mode": "repulse"
-      },
-      "onclick": {
-        "enable": true,
-        "mode": "push"
-      },
-      "resize": true
-    },
-    "modes": {
-      "grab": {
-        "distance": 400,
-        "line_linked": {
-          "opacity": 1
-        }
-      },
-      "bubble": {
-        "distance": 400,
-        "size": 40,
-        "duration": 2,
-        "opacity": 8,
-        "speed": 3
-      },
-      "repulse": {
-        "distance": 200,
-        "duration": 0.4
-      },
-      "push": {
-        "particles_nb": 4
-      },
-      "remove": {
-        "particles_nb": 2
-      }
-    }
-  },
-  "retina_detect": true
 });
 
-// Animación de entrada para las tarjetas
-const cards = document.querySelectorAll('.feature-card');
+// ============================================
+// Mobile hamburger menu
+// ============================================
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+const overlay = document.querySelector('.mobile-overlay');
 
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+function toggleMenu() {
+    hamburger.classList.toggle('active');
+    navLinks.classList.toggle('active');
+    overlay.classList.toggle('active');
+    document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+}
+
+hamburger.addEventListener('click', toggleMenu);
+overlay.addEventListener('click', toggleMenu);
+
+// Close menu when clicking a nav link
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (navLinks.classList.contains('active')) {
+            toggleMenu();
         }
     });
-}, {
-    threshold: 0.1 // La animación se dispara cuando el 10% del elemento es visible
 });
 
-cards.forEach(card => {
-    observer.observe(card);
-});
+// ============================================
+// Feature tabs
+// ============================================
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
 
-// Smooth scrolling para los enlaces de anclaje
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
 
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
+        // Update active button
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Update active content
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            if (content.dataset.tabContent === tab) {
+                content.classList.add('active');
+                // Re-trigger reveal animations for newly visible cards
+                content.querySelectorAll('.reveal').forEach(el => {
+                    el.classList.remove('is-visible');
+                    setTimeout(() => observer.observe(el), 50);
+                });
+            }
         });
     });
 });
 
-// MODIFICADO: Se elimina calculadora dinámica (precio fijo)
-const inputColaboradores = null;
-const resultadoPrecio = null;
-const resultadoMonto = null;
+// ============================================
+// Scroll reveal animations
+// ============================================
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+        }
+    });
+}, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -30px 0px'
+});
 
-function formatCurrencyMXN(value) {
-    return value.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 2 });
-}
+document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+});
 
-function calcularPrecio(colaboradores) {
-    if (!Number.isFinite(colaboradores) || colaboradores < 0) return 0;
-    const tarifa = colaboradores > 100 ? 50 : 75;
-    return colaboradores * tarifa;
-}
+// ============================================
+// Metrics counter animation
+// ============================================
+const counterObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const el = entry.target;
+            const target = parseInt(el.dataset.target);
+            const suffix = el.dataset.suffix || '';
+            const prefix = target >= 1000 ? '+' : '+';
+            const duration = 2000;
+            const startTime = performance.now();
 
-function actualizarResultado() {
-    const valor = Number(inputColaboradores?.value || 0);
-    const total = calcularPrecio(valor);
-    if (resultadoMonto) resultadoMonto.textContent = `${formatCurrencyMXN(total)}`;
-    if (resultadoPrecio && !resultadoMonto) {
-        resultadoPrecio.textContent = `Total mensual: ${formatCurrencyMXN(total)} + IVA`;
-    }
-}
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(eased * target);
 
-// Ya no hay cálculo dinámico
+                if (target >= 1000) {
+                    el.textContent = prefix + current.toLocaleString('es-MX') + suffix;
+                } else {
+                    el.textContent = prefix + current + suffix;
+                }
 
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+
+            requestAnimationFrame(updateCounter);
+            counterObserver.unobserve(el);
+        }
+    });
+}, {
+    threshold: 0.5
+});
+
+document.querySelectorAll('.metric-number').forEach(el => {
+    counterObserver.observe(el);
+});
+
+// ============================================
+// Smooth scrolling for anchor links
+// ============================================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            const headerHeight = header.offsetHeight;
+            const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+            window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+            });
+        }
+    });
+});

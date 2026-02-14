@@ -4,36 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NaaS - Plataforma de Nómina en México</title>
+    <meta name="description" content="NaaS es la plataforma definitiva para la gestión de nómina en México. Automatiza, simplifica y cumple con todas tus obligaciones fiscales.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div id="particles-js"></div>
+    <!-- Header -->
     <header>
         <nav class="container">
-            <!-- MODIFICADO: logo con imagen -->
-            <a href="#" class="logo"><img src="imagenes/logos/NAAS-Logo-white (1).png" alt="NaaS" /></a>
-            <ul>
-                <li><a href="#features">Características</a></li>
+            <a href="#" class="logo">
+                <img src="imagenes/logos/NAAS-Logo-dark.png" alt="NaaS" />
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Plataforma</a></li>
+                <li><a href="#metrics">Resultados</a></li>
+                <li><a href="#pricing">Precios</a></li>
                 <li><a href="#about">Nosotros</a></li>
-                <li><a href="#contact">Contacto</a></li>
-                <li><a href="https://naas-client-prod.s3.us-east-1.amazonaws.com/index.html#/login" class="cta-button">Iniciar Sesión</a></li>
+                <li class="nav-cta">
+                    <a href="https://naas-client-prod.s3.us-east-1.amazonaws.com/index.html#/login" class="btn-outline">Iniciar Sesión</a>
+                    <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary" target="_blank">Solicita Demo</a>
+                </li>
             </ul>
+            <button class="hamburger" aria-label="Abrir menú">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </nav>
     </header>
 
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay"></div>
+
     <main>
+        <!-- Hero -->
         <section class="hero">
             <div class="container">
-                <h1>La Plataforma Definitiva para la Nómina en México</h1>
-                <p>Automatiza, simplifica y cumple con todas tus obligaciones de nómina con NaaS. Diseñado para el futuro del trabajo.</p>
-                <a href="#contact" class="cta-main-button">Solicita una Demo</a>
+                <div class="hero-content">
+                    <div class="hero-badge">Nómina as a Service</div>
+                    <h1>La plataforma definitiva para la <span>nómina en México</span></h1>
+                    <p>Automatiza tu nómina, cumple con el SAT y gestiona a tu equipo desde un solo lugar. Diseñado por expertos en nómina mexicana.</p>
+                    <div class="hero-buttons">
+                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo</a>
+                        <a href="#features" class="btn-outline-light">Conoce más</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-visual-placeholder">
+                        <i class='bx bxs-dashboard'></i>
+                        <span>Tu dashboard de nómina</span>
+                    </div>
+                </div>
             </div>
         </section>
 
+        <!-- Social Proof -->
         <section class="social-proof">
             <div class="container">
                 <p>Con la confianza de empresas líderes en México</p>
@@ -45,7 +73,7 @@
                         <img src="imagenes/logos/logo_head_web_multicleaners.svg" alt="MultiCleaners" />
                         <img src="imagenes/logos/647399dc6fc6bf5f6fe1225b_0267_Aplin_imagotipo_negro-cropped.svg" alt="Aplin" />
                         <img src="imagenes/logos/alianzacorp-light.svg" alt="Alianza Corp" />
-                        <!-- Duplicamos para el efecto infinito -->
+                        <!-- Duplicados para efecto infinito -->
                         <img src="imagenes/logos/632a51cf099f1485ebdd6979_cubbo-logo.svg" alt="Cubbo" />
                         <img src="imagenes/logos/67b777d793bc6f3b3b8d4aed_logo.svg" alt="Grupo IPS" />
                         <img src="imagenes/logos/66fecbb91b23b2a40c273bb2_srm-logo.svg" alt="SCR México" />
@@ -57,144 +85,275 @@
             </div>
         </section>
 
-        <section id="features" class="features">
+        <!-- Features with Tabs -->
+        <section id="features" class="section section-alt">
             <div class="container">
-                <h2>Todo lo que necesitas, en un solo lugar</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <i class='bx bxs-calculator'></i>
-                        <h3>Procesamiento de Nómina</h3>
-                        <p>Calcula y procesa tu nómina de forma masiva o individual con precisión milimétrica.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-receipt'></i>
-                        <h3>Timbrado de Recibos (CFDI)</h3>
-                        <p>Genera y timbra tus recibos de nómina ante el SAT de manera automática y sin complicaciones.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-bar-chart-alt-2'></i>
-                        <h3>Reportes Inteligentes</h3>
-                        <p>Obtén reportes detallados y personalizados para una toma de decisiones informada.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-folder-open'></i>
-                        <h3>Gestión Documental</h3>
-                        <p>Almacena y gestiona de forma segura todos los documentos de tus colaboradores.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-dollar-circle'></i>
-                        <h3>Cálculo de Impuestos</h3>
-                        <p>Asegura el cumplimiento fiscal con nuestro motor de cálculo de impuestos siempre actualizado.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bx-transfer-alt'></i>
-                        <h3>Procesos de Alta y Baja</h3>
-                        <p>Simplifica la incorporación y desvinculación de personal, incluyendo finiquitos y liquidaciones.</p>
-                    </div>
-                    <!-- NUEVO: Módulos adicionales -->
-                    <div class="feature-card">
-                        <i class='bx bxs-user-plus'></i>
-                        <h3>Onboarding Automatizado</h3>
-                        <p>Olvídate de expedientes incompletos: envía un link y las personas suben su información.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-badge-check'></i>
-                        <h3>Firma Digital (NOM-151)</h3>
-                        <p>El papeleo es cosa del pasado: firmas digitales y legales aprobadas con NOM-151.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-search-alt-2'></i>
-                        <h3>Reclutamiento y Selección</h3>
-                        <p>Bot con IA para filtrar CVs y ATS integrado para controlar candidatos de punta a punta.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-plane-alt'></i>
-                        <h3>Vacaciones y Permisos</h3>
-                        <p>Administra vacaciones y permisos con histórico, fechas de vencimiento y reportes.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-wrench'></i>
-                        <h3>Admin. Herramientas de Trabajo</h3>
-                        <p>Asigna y controla las herramientas entregadas a cada colaborador desde su alta.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-door-open'></i>
-                        <h3>Control de Accesos</h3>
-                        <p>Registra entradas y salidas; integración con relojes checadores para bajar datos directo.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-shield-alt-2'></i>
-                        <h3>Asistencia Legal</h3>
-                        <p>Bot asistido por IA con +1,000 horas en LIMSS, LFT, LISR e Infonavit para evitar contingencias.</p>
-                    </div>
+                <div class="section-header">
+                    <h2>Todo lo que necesitas, en un solo lugar</h2>
+                    <p>Una plataforma integral para nómina, gestión de talento y beneficios. Sin complicaciones.</p>
                 </div>
-            </div>
-        </section>
 
-        <section id="benefits" class="features benefits">
-            <div class="container">
-                <h2>Beneficios adicionales para tu equipo</h2>
-                <p>Atrae y retén al mejor talento ofreciendo beneficios que marcan la diferencia, gestionados desde NaaS.</p>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <i class='bx bxs-shield-quarter'></i>
-                        <h3>Seguros y Cobertura</h3>
-                        <p>Ofrece seguros de Gastos Médicos Mayores, de vida y más, de forma sencilla.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-credit-card'></i>
-                        <h3>Vales Flexibles</h3>
-                        <p>Implementa vales de despensa, restaurante o gasolina como parte de tu paquete de compensación.</p>
-                    </div>
-                    <div class="feature-card">
-                        <i class='bx bxs-wallet'></i>
-                        <h3>Adelanto de Nómina</h3>
-                        <p>Permite que tus colaboradores accedan a su salario ganado cuando lo necesiten, sin afectar tu flujo de caja.</p>
-                    </div>
+                <div class="features-tabs">
+                    <button class="tab-btn active" data-tab="nomina">Nómina y Cumplimiento</button>
+                    <button class="tab-btn" data-tab="talento">Gestión de Talento</button>
+                    <button class="tab-btn" data-tab="beneficios">Beneficios</button>
                 </div>
-            </div>
-        </section>
 
-        <!-- NUEVO: Sección de precio fijo por persona -->
-        <section id="pricing" class="features">
-            <div class="container">
-                <h2>Precio por colaborador</h2>
-                <div class="pricing-grid">
-                    <div class="pricing-card pricing-card-result">
-                        <p class="pricing-subtitle">Mensual</p>
-                        <div class="result-box">
-                            <div class="result-amount">MXN $75.00</div>
-                            <div class="result-iva">+ IVA</div>
+                <!-- Tab: Nómina y Cumplimiento -->
+                <div class="tab-content active" data-tab-content="nomina">
+                    <div class="features-grid">
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-calculator'></i>
+                            <h3>Procesamiento de Nómina</h3>
+                            <p>Calcula y procesa tu nómina de forma masiva o individual con precisión milimétrica.</p>
                         </div>
-                        <p class="pricing-subtitle">por persona</p>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-receipt'></i>
+                            <h3>Timbrado de Recibos (CFDI)</h3>
+                            <p>Genera y timbra tus recibos de nómina ante el SAT de manera automática y sin complicaciones.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-dollar-circle'></i>
+                            <h3>Cálculo de Impuestos</h3>
+                            <p>Asegura el cumplimiento fiscal con nuestro motor de cálculo de impuestos siempre actualizado.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-bar-chart-alt-2'></i>
+                            <h3>Reportes Inteligentes</h3>
+                            <p>Obtén reportes detallados y personalizados para una toma de decisiones informada.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bx-transfer-alt'></i>
+                            <h3>Procesos de Alta y Baja</h3>
+                            <p>Simplifica la incorporación y desvinculación de personal, incluyendo finiquitos y liquidaciones.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-shield-alt-2'></i>
+                            <h3>Asistencia Legal (IA)</h3>
+                            <p>Bot asistido por IA con +1,000 horas en LIMSS, LFT, LISR e Infonavit para evitar contingencias.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Gestión de Talento -->
+                <div class="tab-content" data-tab-content="talento">
+                    <div class="features-grid">
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-user-plus'></i>
+                            <h3>Onboarding Automatizado</h3>
+                            <p>Olvídate de expedientes incompletos: envía un link y las personas suben su información.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-search-alt-2'></i>
+                            <h3>Reclutamiento y Selección</h3>
+                            <p>Bot con IA para filtrar CVs y ATS integrado para controlar candidatos de punta a punta.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-plane-alt'></i>
+                            <h3>Vacaciones y Permisos</h3>
+                            <p>Administra vacaciones y permisos con histórico, fechas de vencimiento y reportes.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-folder-open'></i>
+                            <h3>Gestión Documental</h3>
+                            <p>Almacena y gestiona de forma segura todos los documentos de tus colaboradores.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-door-open'></i>
+                            <h3>Control de Accesos</h3>
+                            <p>Registra entradas y salidas; integración con relojes checadores para bajar datos directo.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-wrench'></i>
+                            <h3>Admin. Herramientas de Trabajo</h3>
+                            <p>Asigna y controla las herramientas entregadas a cada colaborador desde su alta.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-badge-check'></i>
+                            <h3>Firma Digital (NOM-151)</h3>
+                            <p>El papeleo es cosa del pasado: firmas digitales y legales aprobadas con NOM-151.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Beneficios -->
+                <div class="tab-content" data-tab-content="beneficios">
+                    <div class="features-grid">
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-shield-quarter'></i>
+                            <h3>Seguros y Cobertura</h3>
+                            <p>Ofrece seguros de Gastos Médicos Mayores, de vida y más, de forma sencilla.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-credit-card'></i>
+                            <h3>Vales Flexibles</h3>
+                            <p>Implementa vales de despensa, restaurante o gasolina como parte de tu paquete de compensación.</p>
+                        </div>
+                        <div class="feature-card reveal">
+                            <i class='bx bxs-wallet'></i>
+                            <h3>Adelanto de Nómina</h3>
+                            <p>Permite que tus colaboradores accedan a su salario ganado cuando lo necesiten, sin afectar tu flujo de caja.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="about-us">
+        <!-- Metrics -->
+        <section id="metrics" class="section">
             <div class="container">
-                <h2>Diseñado por expertos, para expertos</h2>
-                <p>NaaS (Nómina as a Service) es una solución robusta y flexible, creada con la última tecnología para ofrecerte una experiencia de usuario sin igual. Nos enfocamos en la seguridad, la eficiencia y el cumplimiento normativo para que tú te enfoques en hacer crecer tu negocio.</p>
+                <div class="section-header">
+                    <h2>Resultados que hablan por sí solos</h2>
+                    <p>Empresas de todos los tamaños confían en NaaS para su nómina.</p>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item reveal">
+                        <div class="metric-number" data-target="50">0</div>
+                        <div class="metric-label">Empresas activas</div>
+                    </div>
+                    <div class="metric-item reveal">
+                        <div class="metric-number" data-target="5000">0</div>
+                        <div class="metric-label">Colaboradores gestionados</div>
+                    </div>
+                    <div class="metric-item reveal">
+                        <div class="metric-number" data-target="99" data-suffix=".9%">0</div>
+                        <div class="metric-label">Disponibilidad</div>
+                    </div>
+                    <div class="metric-item reveal">
+                        <div class="metric-number" data-target="10000">0</div>
+                        <div class="metric-label">Recibos timbrados</div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="contact" class="contact">
+        <!-- Pricing -->
+        <section id="pricing" class="section section-alt">
             <div class="container">
-                <h2>¿Listo para transformar tu nómina?</h2>
-                <p>Ponte en contacto con nuestro equipo de especialistas.</p>
-                <a href="mailto:hernan@nominaas.com" class="cta-main-button">Contáctanos</a>
+                <div class="section-header">
+                    <h2>Precio simple y transparente</h2>
+                    <p>Sin costos ocultos. Sin contratos de largo plazo. Paga solo por lo que usas.</p>
+                </div>
+                <div class="pricing-wrapper">
+                    <div class="pricing-card">
+                        <div class="pricing-label">Todo incluido</div>
+                        <div class="pricing-amount">
+                            <span class="pricing-currency">MXN</span>
+                            <span class="pricing-value">$75</span>
+                        </div>
+                        <div class="pricing-period">por colaborador / mes + IVA</div>
+                        <ul class="pricing-features">
+                            <li><i class='bx bxs-check-circle'></i> Procesamiento de nómina ilimitado</li>
+                            <li><i class='bx bxs-check-circle'></i> Timbrado CFDI ante el SAT</li>
+                            <li><i class='bx bxs-check-circle'></i> Cálculo automático de impuestos</li>
+                            <li><i class='bx bxs-check-circle'></i> Gestión de altas, bajas y finiquitos</li>
+                            <li><i class='bx bxs-check-circle'></i> Reportes y dashboard en tiempo real</li>
+                            <li><i class='bx bxs-check-circle'></i> Soporte especializado incluido</li>
+                        </ul>
+                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank" style="width: 100%; text-align: center;">Solicita una Demo</a>
+                        <p class="pricing-note">Precio especial disponible para +100 colaboradores</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About / Why NaaS -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="about-grid">
+                    <div class="about-text">
+                        <h2>Diseñado por expertos en nómina mexicana</h2>
+                        <p>NaaS nació de la necesidad real de simplificar la nómina en México. Combinamos años de experiencia en recursos humanos con la mejor tecnología para ofrecerte una plataforma robusta, segura y siempre actualizada.</p>
+                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary" target="_blank">Agenda una reunión</a>
+                    </div>
+                    <div class="value-props">
+                        <div class="value-prop reveal">
+                            <div class="value-prop-icon"><i class='bx bxs-map-alt'></i></div>
+                            <div>
+                                <h4>Hecho para México</h4>
+                                <p>100% adaptado a la legislación fiscal y laboral mexicana. IMSS, ISR, Infonavit y más.</p>
+                            </div>
+                        </div>
+                        <div class="value-prop reveal">
+                            <div class="value-prop-icon"><i class='bx bxs-lock-alt'></i></div>
+                            <div>
+                                <h4>Seguridad empresarial</h4>
+                                <p>Infraestructura en la nube con cifrado de datos y respaldos automáticos continuos.</p>
+                            </div>
+                        </div>
+                        <div class="value-prop reveal">
+                            <div class="value-prop-icon"><i class='bx bxs-bot'></i></div>
+                            <div>
+                                <h4>Inteligencia artificial integrada</h4>
+                                <p>Asistente legal con IA, filtrado de CVs automatizado y reportes inteligentes.</p>
+                            </div>
+                        </div>
+                        <div class="value-prop reveal">
+                            <div class="value-prop-icon"><i class='bx bxs-conversation'></i></div>
+                            <div>
+                                <h4>Soporte especializado</h4>
+                                <p>Equipo de expertos en nómina disponible para resolver tus dudas cuando lo necesites.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Final -->
+        <section id="contact" class="section-dark cta-section">
+            <div class="container">
+                <h2>¿Listo para modernizar tu nómina?</h2>
+                <p>Únete a las empresas que ya simplificaron su nómina con NaaS. Agenda una demo personalizada con nuestro equipo.</p>
+                <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo Gratis</a>
+                <div class="cta-contact-info">
+                    <p>O escríbenos a <a href="mailto:hernan@nominaas.com">hernan@nominaas.com</a></p>
+                </div>
             </div>
         </section>
     </main>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2025 NaaS. Todos los derechos reservados. | <a href="aviso-privacidad.html">Aviso de Privacidad</a></p>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="#" class="logo">
+                        <img src="imagenes/logos/NAAS-Logo-white (1).png" alt="NaaS" />
+                    </a>
+                    <p>Plataforma integral de nómina diseñada para las empresas en México. Automatiza, cumple y crece.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Producto</h4>
+                    <ul>
+                        <li><a href="#features">Nómina</a></li>
+                        <li><a href="#features">Gestión de Talento</a></li>
+                        <li><a href="#features">Beneficios</a></li>
+                        <li><a href="#pricing">Precios</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="#about">Nosotros</a></li>
+                        <li><a href="aviso-privacidad.html">Aviso de Privacidad</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="mailto:hernan@nominaas.com">hernan@nominaas.com</a></li>
+                        <li><a href="https://cal.com/hernaneem/reunion-naas" target="_blank">Agendar reunión</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 NaaS. Todos los derechos reservados.</p>
+                <a href="aviso-privacidad.html">Aviso de Privacidad</a>
+            </div>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
