@@ -771,14 +771,15 @@ nav {
 .comparison-table-wrapper {
     overflow-x: auto;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
     background: var(--bg-white);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E8ECF1;
 }
 
 .comparison-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     font-size: 0.95rem;
 }
 
@@ -789,35 +790,53 @@ nav {
 }
 
 .comparison-table th {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 2rem;
     font-weight: 600;
     text-align: center;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    background: #F8FAFB;
+    border-bottom: 2px solid #E8ECF1;
 }
 
 .comparison-table th.feature-col {
     text-align: left;
-    background: var(--bg-light);
     color: var(--text-primary);
     width: 50%;
+    font-weight: 700;
 }
 
-.comparison-table th.naas-col {
-    background: var(--primary);
-    color: var(--text-light);
+.comparison-table th.brand-col {
     width: 25%;
 }
 
-.comparison-table th.noi-col {
+.brand-badge {
+    display: inline-block;
+    padding: 0.4rem 1.5rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.brand-badge.naas-badge {
+    background: var(--accent);
+    color: #fff;
+}
+
+.brand-badge.noi-badge {
     background: #6B7280;
-    color: var(--text-light);
-    width: 25%;
+    color: #fff;
 }
 
 .comparison-table td {
-    padding: 0.85rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-secondary);
+    padding: 1.15rem 2rem;
+    border-bottom: 1px solid #F0F2F5;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.95rem;
 }
 
 .comparison-table tr:last-child td {
@@ -827,37 +846,58 @@ nav {
 .comparison-table td.check,
 .comparison-table td.cross {
     text-align: center;
-    font-size: 1.2rem;
 }
 
-.comparison-table tr:hover td {
-    background-color: rgba(247, 249, 252, 0.7);
+.icon-check,
+.icon-cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+}
+
+.icon-check {
+    background: #ECFDF5;
+    color: #10B981;
+}
+
+.icon-cross {
+    background: #FEF2F2;
+    color: #EF4444;
+}
+
+.comparison-table tbody tr:not(.section-row):hover td {
+    background-color: #FAFBFD;
 }
 
 .comparison-table tr.section-row td {
-    background: var(--bg-light);
+    background: linear-gradient(135deg, var(--accent) 0%, #FF8F5E 100%);
     font-weight: 700;
-    color: var(--text-primary);
-    font-size: 0.9rem;
+    color: #fff;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 0.75rem 1.5rem;
-    border-bottom: 2px solid var(--accent);
+    letter-spacing: 1px;
+    padding: 1rem 2rem;
+    border-bottom: none;
 }
 
 .comparison-cta {
     text-align: center;
-    margin-top: 2.5rem;
+    margin-top: 3rem;
 }
 
 .comparison-cta p {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
 }
 
 .comparison-cta strong {
     color: var(--accent);
+    font-weight: 700;
 }
 
 /* ============================================
@@ -1282,12 +1322,29 @@ footer {
 
     .comparison-table th,
     .comparison-table td {
-        padding: 0.7rem 1rem;
+        padding: 0.85rem 1rem;
         font-size: 0.85rem;
     }
 
     .comparison-table th.feature-col {
-        width: 45%;
+        width: 50%;
+    }
+
+    .comparison-table tr.section-row td {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .icon-check,
+    .icon-cross {
+        width: 30px;
+        height: 30px;
+        font-size: 1.1rem;
+    }
+
+    .brand-badge {
+        padding: 0.3rem 1rem;
+        font-size: 0.75rem;
     }
 
     .about-grid {
