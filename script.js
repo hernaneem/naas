@@ -356,15 +356,46 @@ if (roiCanvas) {
 // ============================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            e.preventDefault();
-            const headerHeight = header.offsetHeight;
-            const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
+        const href = this.getAttribute('href');
+        // Only handle pure hash links on the current page
+        if (href.startsWith('#')) {
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                const headerHeight = header.offsetHeight;
+                const targetPosition = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
         }
     });
 });
+
+// ============================================
+// Partners Calculator
+// ============================================
+const calcClients = document.getElementById('calcClients');
+const calcEmployees = document.getElementById('calcEmployees');
+if (calcClients && calcEmployees) {
+    const pricePerEmployee = 75;
+    const commissionRate = 0.20;
+
+    function updateCalc() {
+        const clients = parseInt(calcClients.value);
+        const employees = parseInt(calcEmployees.value);
+        const mrr = clients * employees * pricePerEmployee;
+        const monthly = mrr * commissionRate;
+        const annual = monthly * 12;
+
+        document.getElementById('calcClientsVal').textContent = clients;
+        document.getElementById('calcEmployeesVal').textContent = employees;
+        document.getElementById('calcMonthly').textContent = '$' + monthly.toLocaleString('es-MX');
+        document.getElementById('calcAnnual').textContent = '$' + annual.toLocaleString('es-MX');
+    }
+
+    calcClients.addEventListener('input', updateCalc);
+    calcEmployees.addEventListener('input', updateCalc);
+    updateCalc();
+}

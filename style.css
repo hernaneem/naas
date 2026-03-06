@@ -1522,6 +1522,418 @@ footer {
 }
 
 /* ============================================
+   Page Hero (subpages)
+   ============================================ */
+.page-hero {
+    background: var(--bg-gradient);
+    padding: 10rem 0 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.page-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.page-hero h1 {
+    color: var(--text-light);
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+}
+
+.page-hero h1 span {
+    color: var(--accent);
+}
+
+.page-hero p {
+    color: rgba(255,255,255,0.75);
+    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* ============================================
+   Partners Page
+   ============================================ */
+.partners-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    position: relative;
+}
+
+.partner-step {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    position: relative;
+    transition: all var(--transition);
+}
+
+.partner-step:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.step-number {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+    color: var(--accent);
+    font-size: 1.8rem;
+}
+
+.partner-step h3 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.partner-step p {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+/* Partner Levels */
+.partner-levels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    align-items: stretch;
+}
+
+.partner-level-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 2px solid var(--border);
+    transition: all var(--transition);
+}
+
+.partner-level-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.partner-level-featured {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-md);
+    transform: scale(1.03);
+}
+
+.partner-level-featured:hover {
+    transform: scale(1.03) translateY(-4px);
+}
+
+.level-header {
+    padding: 2rem;
+    text-align: center;
+    color: #fff;
+}
+
+.level-referidor {
+    background: linear-gradient(135deg, #6B7280, #4B5563);
+}
+
+.level-presentador {
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+}
+
+.level-activo {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+}
+
+.level-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    padding: 0.2rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+}
+
+.level-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.level-commission {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.level-commission-label {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.level-body {
+    padding: 2rem;
+}
+
+.level-role {
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.level-example {
+    background: var(--bg-light);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.level-example-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.level-example-amount {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+.level-example-amount small {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+}
+
+.level-example-annual {
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+}
+
+/* Partners Calculator */
+.calculator-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.calc-slider-group {
+    margin-bottom: 2rem;
+}
+
+.calc-slider-group label {
+    display: block;
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.calc-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--border);
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255,107,53,0.4);
+}
+
+.calc-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(255,107,53,0.4);
+}
+
+.calc-slider-value {
+    text-align: center;
+    margin-top: 0.5rem;
+    color: var(--accent);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.calc-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.calc-result-item {
+    background: var(--bg-light);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.calc-result-highlight {
+    background: rgba(255, 107, 53, 0.08);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+}
+
+.calc-result-label {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.calc-result-amount {
+    color: var(--text-primary);
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+
+.calc-result-highlight .calc-result-amount {
+    color: var(--accent);
+}
+
+/* Partner Types */
+.partner-types-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.partner-type-card {
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    border: 1px solid var(--border);
+    transition: all var(--transition);
+}
+
+.partner-type-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: transparent;
+}
+
+.partner-type-tier {
+    display: inline-block;
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--accent);
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+.partner-type-card h4 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.partner-type-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Rules Grid */
+.rules-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.rule-item {
+    text-align: center;
+    padding: 2rem 1.5rem;
+}
+
+.rule-item i {
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.rule-item h4 {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.rule-item p {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.6;
+}
+
+/* ============================================
    Mobile Menu Overlay
    ============================================ */
 .mobile-overlay {
@@ -1567,9 +1979,50 @@ footer {
     .roi-benefits {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .partners-steps,
+    .partner-levels,
+    .partner-types-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .partner-level-featured {
+        transform: none;
+    }
+
+    .partner-level-featured:hover {
+        transform: translateY(-4px);
+    }
+
+    .rules-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 768px) {
+    .page-hero {
+        padding: 8rem 0 3rem;
+    }
+
+    .page-hero h1 {
+        font-size: 2rem;
+    }
+
+    .partners-steps,
+    .partner-levels,
+    .partner-types-grid,
+    .rules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .calculator-card {
+        padding: 1.5rem;
+    }
+
+    .calc-results {
+        grid-template-columns: 1fr;
+    }
+
     .roi-cards {
         grid-template-columns: 1fr;
         gap: 1rem;
