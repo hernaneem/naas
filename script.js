@@ -67,7 +67,7 @@ tabBtns.forEach(btn => {
 });
 
 // ============================================
-// Scroll reveal animations
+// Scroll reveal animations (staggered)
 // ============================================
 const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -80,6 +80,17 @@ const observer = new IntersectionObserver(entries => {
     threshold: 0.1,
     rootMargin: '0px 0px -30px 0px'
 });
+
+// Apply a small staggered delay to reveal items within the same group
+function applyStagger() {
+    document.querySelectorAll('.features-grid, .metrics-grid, .testimonials-grid, .value-props').forEach(group => {
+        const items = group.querySelectorAll('.reveal');
+        items.forEach((el, i) => {
+            el.style.setProperty('--reveal-delay', Math.min(i * 70, 420) + 'ms');
+        });
+    });
+}
+applyStagger();
 
 document.querySelectorAll('.reveal').forEach(el => {
     observer.observe(el);
@@ -186,7 +197,7 @@ if (roiCanvas) {
             // Y-axis labels
             const val = maxVal - (maxVal / gridSteps) * i;
             ctx.fillStyle = '#9CA3AF';
-            ctx.font = '11px Poppins, sans-serif';
+            ctx.font = '11px Satoshi, sans-serif';
             ctx.textAlign = 'right';
             ctx.fillText('$' + Math.round(val / 1000) + 'k', padLeft - 10, y + 4);
         }
@@ -194,7 +205,7 @@ if (roiCanvas) {
 
         // X-axis labels
         ctx.fillStyle = '#9CA3AF';
-        ctx.font = '11px Poppins, sans-serif';
+        ctx.font = '11px Satoshi, sans-serif';
         ctx.textAlign = 'center';
         for (let i = 0; i < months; i++) {
             const x = padLeft + stepX * i;
@@ -313,7 +324,7 @@ if (roiCanvas) {
             ctx.fill();
 
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 13px Poppins, sans-serif';
+            ctx.font = 'bold 13px Satoshi, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Ahorras $' + Math.round(savings / 1000) + 'k', boxX + boxW / 2, yMid + 5);
         }

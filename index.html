@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NaaS - Plataforma de Nómina en México</title>
     <meta name="description" content="NaaS es la plataforma definitiva para la gestión de nómina en México. Automatiza, simplifica y cumple con todas tus obligaciones fiscales.">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Header -->
@@ -42,20 +42,108 @@
     <main>
         <!-- Hero -->
         <section class="hero">
+            <div class="hero-grid"></div>
             <div class="container">
                 <div class="hero-content">
-                    <div class="hero-badge">Nómina as a Service</div>
+                    <div class="hero-badge">Nómina as a Service · Hecho para México</div>
                     <h1>La plataforma definitiva para la <span>nómina en México</span></h1>
                     <p>Automatiza tu nómina, cumple con el SAT y gestiona a tu equipo desde un solo lugar. Diseñado por expertos en nómina mexicana.</p>
                     <div class="hero-buttons">
-                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo</a>
+                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo <i class='bx bx-right-arrow-alt'></i></a>
                         <a href="#features" class="btn-outline-light">Conoce más</a>
+                    </div>
+                    <div class="hero-trust">
+                        <span><i class='bx bx-check-circle'></i> Timbrado CFDI automático</span>
+                        <span><i class='bx bx-check-circle'></i> Cumplimiento SAT garantizado</span>
+                        <span><i class='bx bx-check-circle'></i> Soporte experto</span>
                     </div>
                 </div>
                 <div class="hero-visual">
-                    <div class="hero-visual-placeholder">
-                        <i class='bx bxs-dashboard'></i>
-                        <span>Tu dashboard de nómina</span>
+                    <!-- Dashboard mockup (pure HTML/CSS) -->
+                    <div class="dashboard-mock" role="img" aria-label="Vista del panel de nómina de NaaS: nómina de junio 2026 con métricas, gráfica por quincena y lista de colaboradores timbrados.">
+                        <div class="dash-topbar">
+                            <div class="dash-dots"><span></span><span></span><span></span></div>
+                            <div class="dash-urlbar"><i class='bx bxs-lock-alt'></i> app.nominaas.com</div>
+                        </div>
+                        <div class="dash-body">
+                            <aside class="dash-sidebar">
+                                <div class="dash-logo-dot"></div>
+                                <div class="dash-nav-ico active"><i class='bx bxs-dashboard'></i></div>
+                                <div class="dash-nav-ico"><i class='bx bxs-group'></i></div>
+                                <div class="dash-nav-ico"><i class='bx bxs-receipt'></i></div>
+                                <div class="dash-nav-ico"><i class='bx bxs-bar-chart-alt-2'></i></div>
+                                <div class="dash-nav-ico"><i class='bx bxs-cog'></i></div>
+                            </aside>
+                            <div class="dash-main">
+                                <div class="dash-head">
+                                    <div>
+                                        <h4>Nómina · Junio 2026</h4>
+                                        <p>Quincena 12 · 142 colaboradores</p>
+                                    </div>
+                                    <div class="dash-run-btn">Procesar</div>
+                                </div>
+                                <div class="dash-kpis">
+                                    <div class="dash-kpi">
+                                        <div class="dash-kpi-label">Total nómina</div>
+                                        <div class="dash-kpi-value">$1.28M</div>
+                                        <div class="dash-kpi-trend up"><i class='bx bx-trending-up'></i> 4.2%</div>
+                                    </div>
+                                    <div class="dash-kpi">
+                                        <div class="dash-kpi-label">Colaboradores</div>
+                                        <div class="dash-kpi-value">142</div>
+                                        <div class="dash-kpi-trend up"><i class='bx bx-trending-up'></i> +6</div>
+                                    </div>
+                                    <div class="dash-kpi">
+                                        <div class="dash-kpi-label">Timbrados</div>
+                                        <div class="dash-kpi-value">142/142</div>
+                                        <div class="dash-kpi-trend neutral"><i class='bx bx-check-double'></i> 100%</div>
+                                    </div>
+                                </div>
+                                <div class="dash-chart">
+                                    <div class="dash-chart-head">
+                                        <span>Costo por quincena</span>
+                                        <em>Últimos 8 periodos</em>
+                                    </div>
+                                    <div class="dash-bars">
+                                        <i style="height:48%;animation-delay:.05s"></i>
+                                        <i style="height:62%;animation-delay:.12s"></i>
+                                        <i style="height:55%;animation-delay:.19s"></i>
+                                        <i style="height:70%;animation-delay:.26s"></i>
+                                        <i style="height:66%;animation-delay:.33s"></i>
+                                        <i style="height:82%;animation-delay:.40s"></i>
+                                        <i style="height:74%;animation-delay:.47s"></i>
+                                        <i class="peak" style="height:100%;animation-delay:.54s"></i>
+                                    </div>
+                                </div>
+                                <div class="dash-rows">
+                                    <div class="dash-row">
+                                        <div class="dash-avatar a1">JV</div>
+                                        <div class="dash-row-name"><strong>Javier Vázquez</strong><small>Dirección General</small></div>
+                                        <div class="dash-row-pay">$48,200</div>
+                                        <div class="dash-chip"><i class='bx bx-check'></i> Timbrado</div>
+                                    </div>
+                                    <div class="dash-row">
+                                        <div class="dash-avatar a2">RM</div>
+                                        <div class="dash-row-name"><strong>Reyna Martínez</strong><small>Operaciones</small></div>
+                                        <div class="dash-row-pay">$22,750</div>
+                                        <div class="dash-chip"><i class='bx bx-check'></i> Timbrado</div>
+                                    </div>
+                                    <div class="dash-row">
+                                        <div class="dash-avatar a3">AA</div>
+                                        <div class="dash-row-name"><strong>Alejandro Arzate</strong><small>Ventas</small></div>
+                                        <div class="dash-row-pay">$18,400</div>
+                                        <div class="dash-chip"><i class='bx bx-check'></i> Timbrado</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dash-float">
+                            <div class="dash-float-ico"><i class='bx bxs-check-shield'></i></div>
+                            <div class="dash-float-txt">
+                                <strong>CFDI timbrado</strong>
+                                <small>142 recibos ante el SAT</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,7 +177,8 @@
         <section id="features" class="section section-alt">
             <div class="container">
                 <div class="section-header">
-                    <h2>Todo lo que necesitas, en un solo lugar</h2>
+                    <span class="eyebrow">Plataforma</span>
+                    <h2>Todo lo que necesitas, <span class="hl">en un solo lugar</span></h2>
                     <p>Una plataforma integral para nómina, gestión de talento y beneficios. Sin complicaciones.</p>
                 </div>
 
@@ -203,7 +292,8 @@
         <section id="metrics" class="section">
             <div class="container">
                 <div class="section-header">
-                    <h2>Resultados que hablan por sí solos</h2>
+                    <span class="eyebrow">Impacto</span>
+                    <h2>Resultados que <span class="hl">hablan por sí solos</span></h2>
                     <p>Empresas de todos los tamaños confían en NaaS para su nómina.</p>
                 </div>
                 <div class="metrics-grid">
@@ -231,7 +321,8 @@
         <section id="testimonials" class="section section-alt">
             <div class="container">
                 <div class="section-header">
-                    <h2>Lo que dicen nuestros clientes</h2>
+                    <span class="eyebrow">Testimonios</span>
+                    <h2>Lo que dicen <span class="hl">nuestros clientes</span></h2>
                     <p>Empresas reales que ya transformaron su gestión de nómina con NaaS.</p>
                 </div>
                 <div class="testimonials-grid">
@@ -239,9 +330,7 @@
                         <div class="testimonial-stars">★★★★★</div>
                         <p class="testimonial-text">"NaaS nos ahorró más de 20 horas al mes en procesos de nómina. El timbrado automático y los reportes en tiempo real cambiaron completamente nuestra operación."</p>
                         <div class="testimonial-author">
-                            <div class="testimonial-avatar">
-                                <img src="imagenes/testimoniales/avatar-1.jpg" alt="Javier Vazquez" />
-                            </div>
+                            <div class="testimonial-avatar" aria-hidden="true">JV</div>
                             <div class="testimonial-info">
                                 <h4>Javier Vazquez</h4>
                                 <span>CEO — SRM Marketing</span>
@@ -252,9 +341,7 @@
                         <div class="testimonial-stars">★★★★★</div>
                         <p class="testimonial-text">"Llevamos más de dos años trabajando con la plataforma y nos sorprende la velocidad con la que trabaja el equipo, así como la facilidad que hemos tenido para manejar todas las nóminas de nuestros clientes."</p>
                         <div class="testimonial-author">
-                            <div class="testimonial-avatar">
-                                <img src="imagenes/testimoniales/avatar-2.jpg" alt="Alejandro Arzate" />
-                            </div>
+                            <div class="testimonial-avatar av-2" aria-hidden="true">AA</div>
                             <div class="testimonial-info">
                                 <h4>Alejandro Arzate</h4>
                                 <span>CEO — Grupo IPS</span>
@@ -265,9 +352,7 @@
                         <div class="testimonial-stars">★★★★★</div>
                         <p class="testimonial-text">"Por la naturaleza de nuestro negocio, la operación era un caos. A partir de que nos cambiamos con NaaS, todo ha sido mucho más fluido y con toda la información centralizada.</p>
                         <div class="testimonial-author">
-                            <div class="testimonial-avatar">
-                                <img src="imagenes/testimoniales/avatar-3.jpg" alt="Reyna Vazquez" />
-                            </div>
+                            <div class="testimonial-avatar av-3" aria-hidden="true">RV</div>
                             <div class="testimonial-info">
                                 <h4>Reyna Vazquez</h4>
                                 <span>Gerente de Operaciones — MultiCleaners</span>
@@ -284,6 +369,7 @@
             <div class="container">
                 <div class="about-grid">
                     <div class="about-text">
+                        <span class="eyebrow">Por qué NaaS</span>
                         <h2>Diseñado por expertos en nómina mexicana</h2>
                         <p>NaaS nació de la necesidad real de simplificar la nómina en México. Combinamos años de experiencia en recursos humanos con la mejor tecnología para ofrecerte una plataforma robusta, segura y siempre actualizada.</p>
                         <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary" target="_blank">Agenda una reunión</a>
@@ -325,6 +411,7 @@
         <!-- CTA Final -->
         <section id="contact" class="section-dark cta-section">
             <div class="container">
+                <span class="eyebrow">Empieza hoy</span>
                 <h2>¿Listo para modernizar tu nómina?</h2>
                 <p>Únete a las empresas que ya simplificaron su nómina con NaaS. Agenda una demo personalizada con nuestro equipo.</p>
                 <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo Gratis</a>
