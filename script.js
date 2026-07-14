@@ -250,6 +250,15 @@ if (pbEmployees) {
             totalAmount.classList.remove('is-quote');
             note.textContent = `Para ${employees.toLocaleString('es-MX')} colaboradores, más IVA.`;
         }
+
+        // El slider anunciaría "100" a secas; con unidades se entiende sin ver la pantalla.
+        pbEmployees.setAttribute('aria-valuetext',
+            isQuote ? 'Más de 1,000 colaboradores' : `${employees.toLocaleString('es-MX')} colaboradores`);
+
+        // Resumen hablado: sólo lo que cambia, para no releer la tarjeta entera en cada paso.
+        document.getElementById('pbAnnounce').textContent = isQuote
+            ? `${money(perPerson)} por colaborador. Más de 1,000 colaboradores: contactar ventas.`
+            : `${money(perPerson)} por colaborador. Total mensual ${money(perPerson * employees)} más IVA.`;
     }
 
     pbEmployees.addEventListener('input', updateBuilder);
