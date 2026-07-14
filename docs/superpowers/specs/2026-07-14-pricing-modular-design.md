@@ -60,8 +60,8 @@ mensual, desglose línea por línea de los módulos activos, nota "+ IVA" y CTA 
 `https://cal.com/hernaneem/reunion-naas`.
 
 En escritorio el resumen es una columna sticky a la derecha que acompaña el scroll de los
-tres pasos. Abajo de 900px la sección colapsa a una sola columna y el resumen deja de ser
-sticky: se coloca al final, después del slider.
+tres pasos. En el breakpoint de 1024px —el que ya usa el sistema— la sección colapsa a una
+sola columna y el resumen deja de ser sticky: se coloca al final, después del slider.
 
 La nota actual "Precio especial disponible para +100 colaboradores" desaparece junto con la
 tarjeta vieja. Su promesa la absorbe el tope del slider, que invita a contactar ventas.
@@ -84,6 +84,10 @@ HTML en `precios.html`, estilos en `style.css`, lógica en `script.js`. Sin depe
 nuevas. El bloque de JS va guardado tras un `if (el)` como el de la calculadora de partners,
 para no romper las páginas que no tienen el simulador. Los precios viven en un objeto de
 configuración al inicio del bloque, para que un cambio de tarifa sea una sola línea.
+
+Las tarjetas de módulo usan `<div class="pb-module-head">`, no `<header>`: `style.css` estiliza
+`header` con un selector de tipo (`position: fixed; width: 100%`), que se filtraría a cualquier
+`<header>` anidado y sacaría la cabecera de la tarjeta fuera de la pantalla.
 
 ## Cambios colaterales
 

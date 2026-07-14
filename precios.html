@@ -51,25 +51,165 @@
         <!-- Pricing -->
         <section id="pricing" class="section">
             <div class="container">
-                <div class="pricing-wrapper">
-                    <div class="pricing-card">
-                        <div class="pricing-label">Todo incluido</div>
-                        <div class="pricing-amount">
-                            <span class="pricing-currency">MXN</span>
-                            <span class="pricing-value">$75</span>
+                <div class="pricing-builder">
+                    <!-- Steps -->
+                    <div class="pb-steps">
+                        <!-- Step 1: Base -->
+                        <div class="pb-step">
+                            <div class="pb-step-head">
+                                <span class="pb-step-num">1</span>
+                                <div class="pb-step-copy">
+                                    <h2>Tu base</h2>
+                                    <p>La nómina es el corazón del sistema. Siempre va incluida.</p>
+                                </div>
+                            </div>
+                            <article class="pb-module pb-module-base is-active">
+                                <div class="pb-module-head">
+                                    <div class="pb-module-id">
+                                        <span class="pb-module-icon"><i class='bx bxs-calculator'></i></span>
+                                        <div>
+                                            <h3>Nómina</h3>
+                                            <p>Cálculo, timbrado y cumplimiento de punta a punta.</p>
+                                        </div>
+                                    </div>
+                                    <div class="pb-module-aside">
+                                        <div class="pb-module-price">
+                                            <span class="pb-price-num">$45</span>
+                                            <span class="pb-price-unit">por colaborador / mes</span>
+                                        </div>
+                                        <span class="pb-badge-included"><i class='bx bx-check'></i> Siempre incluida</span>
+                                    </div>
+                                </div>
+                                <ul class="pb-features">
+                                    <li><i class='bx bxs-check-circle'></i> Cálculos de nómina y timbrado</li>
+                                    <li><i class='bx bxs-check-circle'></i> Conexión IDSE</li>
+                                    <li><i class='bx bxs-check-circle'></i> Confrontas IMSS y SAT</li>
+                                    <li><i class='bx bxs-check-circle'></i> SUA</li>
+                                    <li><i class='bx bxs-check-circle'></i> Layouts de pago</li>
+                                    <li><i class='bx bxs-check-circle'></i> Directorio de empleados</li>
+                                    <li><i class='bx bxs-check-circle'></i> Expediente digital (documentos)</li>
+                                    <li><i class='bx bxs-check-circle'></i> Organigrama</li>
+                                    <li><i class='bx bxs-check-circle'></i> Gestión de vacaciones y permisos</li>
+                                    <li><i class='bx bxs-check-circle'></i> Solicitudes e incidencias</li>
+                                    <li><i class='bx bxs-check-circle'></i> Reportes de nómina y especiales</li>
+                                    <li><i class='bx bxs-check-circle'></i> Módulo de comunicados</li>
+                                    <li><i class='bx bxs-check-circle'></i> Portal del colaborador</li>
+                                </ul>
+                            </article>
                         </div>
-                        <div class="pricing-period">por colaborador / mes + IVA</div>
-                        <ul class="pricing-features">
-                            <li><i class='bx bxs-check-circle'></i> Procesamiento de nómina ilimitado</li>
-                            <li><i class='bx bxs-check-circle'></i> Timbrado CFDI ante el SAT</li>
-                            <li><i class='bx bxs-check-circle'></i> Cálculo automatico de impuestos</li>
-                            <li><i class='bx bxs-check-circle'></i> Gestión de altas, bajas y finiquitos</li>
-                            <li><i class='bx bxs-check-circle'></i> Reportes y dashboard en tiempo real</li>
-                            <li><i class='bx bxs-check-circle'></i> Soporte especializado incluido</li>
-                        </ul>
-                        <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank" style="width: 100%; text-align: center;">Solicita una Demo</a>
-                        <p class="pricing-note">Precio especial disponible para +100 colaboradores</p>
+
+                        <!-- Step 2: Add-ons -->
+                        <div class="pb-step">
+                            <div class="pb-step-head">
+                                <span class="pb-step-num">2</span>
+                                <div class="pb-step-copy">
+                                    <h2>Agrega lo que necesites</h2>
+                                    <p>Enciende sólo los módulos que tu operación use. Puedes sumarlos después.</p>
+                                </div>
+                            </div>
+
+                            <article class="pb-module" data-module="asistencias">
+                                <div class="pb-module-head">
+                                    <div class="pb-module-id">
+                                        <span class="pb-module-icon"><i class='bx bxs-time-five'></i></span>
+                                        <div>
+                                            <h3>Turnos y asistencias</h3>
+                                            <p>Control de entradas y salidas con valor legal.</p>
+                                        </div>
+                                    </div>
+                                    <div class="pb-module-aside">
+                                        <div class="pb-module-price">
+                                            <span class="pb-price-num">+$25</span>
+                                            <span class="pb-price-unit">por colaborador / mes</span>
+                                        </div>
+                                        <label class="pb-toggle">
+                                            <input type="checkbox" id="pbModAsistencias">
+                                            <span class="pb-toggle-track"><span class="pb-toggle-knob"></span></span>
+                                            <span class="pb-toggle-text">Agregar</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <ul class="pb-features">
+                                    <li><i class='bx bxs-check-circle'></i> Conexión a reloj checador</li>
+                                    <li><i class='bx bxs-check-circle'></i> Reloj checador virtual</li>
+                                    <li><i class='bx bxs-check-circle'></i> Reloj checador con geolocalización</li>
+                                    <li><i class='bx bxs-check-circle'></i> Plantilla de entradas y salidas con valor legal</li>
+                                    <li><i class='bx bxs-check-circle'></i> Gestión de horas extras (a solicitud)</li>
+                                    <li><i class='bx bxs-check-circle'></i> Conexión directa a nómina</li>
+                                </ul>
+                            </article>
+
+                            <article class="pb-module" data-module="talento">
+                                <div class="pb-module-head">
+                                    <div class="pb-module-id">
+                                        <span class="pb-module-icon"><i class='bx bxs-user-plus'></i></span>
+                                        <div>
+                                            <h3>Onboarding y gestión de talento</h3>
+                                            <p>Del reclutamiento a la firma del contrato, sin papel.</p>
+                                        </div>
+                                    </div>
+                                    <div class="pb-module-aside">
+                                        <div class="pb-module-price">
+                                            <span class="pb-price-num">+$35</span>
+                                            <span class="pb-price-unit">por colaborador / mes</span>
+                                        </div>
+                                        <label class="pb-toggle">
+                                            <input type="checkbox" id="pbModTalento">
+                                            <span class="pb-toggle-track"><span class="pb-toggle-knob"></span></span>
+                                            <span class="pb-toggle-text">Agregar</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <ul class="pb-features">
+                                    <li><i class='bx bxs-check-circle'></i> Solicitud de documentación por link de WhatsApp</li>
+                                    <li><i class='bx bxs-check-circle'></i> Prueba de vida</li>
+                                    <li><i class='bx bxs-check-circle'></i> Revisión de documentos</li>
+                                    <li><i class='bx bxs-check-circle'></i> Revisión de antecedentes</li>
+                                    <li><i class='bx bxs-check-circle'></i> ATS</li>
+                                    <li><i class='bx bxs-check-circle'></i> Reclutamiento apoyado con IA</li>
+                                    <li><i class='bx bxs-check-circle'></i> Firma digital con NOM-151</li>
+                                </ul>
+                            </article>
+                        </div>
+
+                        <!-- Step 3: Size -->
+                        <div class="pb-step">
+                            <div class="pb-step-head">
+                                <span class="pb-step-num">3</span>
+                                <div class="pb-step-copy">
+                                    <h2>Tamaño de tu empresa</h2>
+                                    <p>Mueve el control para ver tu costo real.</p>
+                                </div>
+                            </div>
+                            <div class="pb-slider-card">
+                                <div class="pb-slider-value"><span id="pbEmployeesVal">100</span> colaboradores</div>
+                                <input type="range" id="pbEmployees" class="calc-slider" min="50" max="1000" step="10" value="100" aria-label="Número de colaboradores">
+                                <div class="pb-slider-scale">
+                                    <span>50</span>
+                                    <span>1,000+</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Summary -->
+                    <aside class="pb-summary">
+                        <div class="pb-summary-card">
+                            <h3 class="pb-summary-title">Resumen de tu plan</h3>
+                            <div class="pb-summary-price">
+                                <span class="pb-summary-currency">MXN</span>
+                                <span class="pb-summary-value" id="pbPerPerson">$45</span>
+                            </div>
+                            <p class="pb-summary-unit">por colaborador / mes + IVA</p>
+                            <ul class="pb-summary-lines" id="pbLines"></ul>
+                            <div class="pb-summary-total">
+                                <span class="pb-total-label" id="pbTotalLabel">Total mensual</span>
+                                <span class="pb-total-amount" id="pbTotal">$4,500</span>
+                            </div>
+                            <p class="pb-summary-note" id="pbNote">Para 100 colaboradores, más IVA.</p>
+                            <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg pb-summary-cta" target="_blank">Solicita una propuesta</a>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </section>
@@ -268,7 +408,7 @@
             <div class="container">
                 <div class="section-header">
                     <h2>El verdadero costo de tu nómina</h2>
-                    <p>Aspel NOI parece económico, pero el costo real incluye al personal que necesitas para operar. Con NaaS, una sola persona hace el trabajo de dos.</p>
+                    <p>Aspel NOI parece económico, pero el costo real incluye al personal que necesitas para operar. Por prácticamente el mismo gasto mensual, NaaS te da la suite completa: una sola persona hace el trabajo de dos y además obtienes asistencias, onboarding, ATS, IA legal y firma NOM-151.</p>
                 </div>
 
                 <!-- Cost Cards -->
@@ -320,17 +460,17 @@
 
                     <!-- NaaS Card -->
                     <div class="roi-card roi-card-naas reveal">
-                        <div class="roi-card-ribbon">Ahorra $40,224/ano</div>
+                        <div class="roi-card-ribbon">Mismo costo, el doble de plataforma</div>
                         <div class="roi-card-header roi-header-naas">
                             <span class="roi-card-label">Con NaaS</span>
-                            <span class="roi-card-subtitle">Todo en una sola plataforma</span>
+                            <span class="roi-card-subtitle">Suite completa en una sola plataforma</span>
                         </div>
                         <div class="roi-card-body">
                             <div class="roi-line-item">
-                                <span class="roi-item-name">Plataforma NaaS
-                                    <span class="roi-item-detail">Nómina, reclutamiento, IA legal, IDSE, firma digital, reportes</span>
+                                <span class="roi-item-name">Suite completa NaaS
+                                    <span class="roi-item-detail">Nómina, asistencias, onboarding, ATS, IA legal, IDSE, firma digital, reportes</span>
                                 </span>
-                                <span class="roi-item-price roi-price-accent">$7,500<small>/mes</small></span>
+                                <span class="roi-item-price roi-price-accent">$10,500<small>/mes</small></span>
                             </div>
                             <div class="roi-line-item">
                                 <span class="roi-item-name">Auxiliar administrativo
@@ -345,30 +485,16 @@
                             <div class="roi-line-divider"></div>
                             <div class="roi-line-item roi-total">
                                 <span class="roi-item-name">Total mensual</span>
-                                <span class="roi-item-price">$22,500</span>
+                                <span class="roi-item-price">$25,500</span>
                             </div>
                             <div class="roi-line-item roi-annual">
                                 <span class="roi-item-name">Costo anual</span>
-                                <span class="roi-item-price">$270,000</span>
+                                <span class="roi-item-price">$306,000</span>
                             </div>
                         </div>
                         <div class="roi-card-footer roi-footer-naas">
                             <span>1 persona con productividad x2</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Savings Chart -->
-                <div class="roi-chart-wrapper reveal">
-                    <h3 class="roi-chart-title">Ahorro acumulado a 12 meses</h3>
-                    <p class="roi-chart-subtitle">Empresa de 100 empleados — costo acumulado mes a mes</p>
-                    <div class="roi-chart-container">
-                        <canvas id="roiChart"></canvas>
-                    </div>
-                    <div class="roi-chart-legend">
-                        <span class="roi-legend-item"><span class="roi-legend-dot roi-dot-noi"></span> Aspel NOI + personal</span>
-                        <span class="roi-legend-item"><span class="roi-legend-dot roi-dot-naas"></span> NaaS + 1 auxiliar</span>
-                        <span class="roi-legend-item"><span class="roi-legend-dot roi-dot-savings"></span> Tu ahorro</span>
                     </div>
                 </div>
 
