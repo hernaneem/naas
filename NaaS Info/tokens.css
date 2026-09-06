@@ -1,0 +1,98 @@
+/* ============================================================
+   NaaS — Design tokens oficiales
+   Extraídos de https://nominaas.com/ el 2026-07-23 con Playwright.
+   Fuente de verdad para propuestas, documentos y cualquier
+   material generado en automático. No inventar colores fuera
+   de esta paleta.
+   ============================================================ */
+
+:root {
+  /* --- Color primario (azul marino NaaS) --- */
+  --primary: #142441;
+  --primary-light: #2D4A7A;
+  --primary-700: #1B2A4A;
+  --primary-300: #4B6CA0;
+
+  /* --- Acento (naranja NaaS) --- */
+  --accent: #FF6B35;
+  --accent-hover: #E85A2A;
+  --accent-soft: rgba(255, 107, 53, 0.10);
+  --accent-glow: rgba(255, 107, 53, 0.35);
+
+  /* --- Fondos --- */
+  --bg-white: #FFFFFF;
+  --bg-light: #F5F8FC;
+  --bg-subtle: #EEF3FA;
+  --bg-dark: #142441;
+  --bg-gradient: linear-gradient(150deg, #101E38 0%, #1B2A4A 45%, #294876 100%);
+
+  /* --- Texto --- */
+  --text-primary: #0F1B33;
+  --text-secondary: #566179;
+  --text-muted: #616F89;
+  --text-light: #FFFFFF;
+  --text-light-soft: rgba(255, 255, 255, 0.78); /* párrafos sobre fondo oscuro */
+
+  /* --- Bordes --- */
+  --border: #E6EBF3;
+  --border-strong: #D5DEEC;
+
+  /* --- Semánticos (observados en el sitio) --- */
+  --success: #16A34A;       /* checks de cumplimiento, "Timbrado" */
+  --success-soft: #ECFDF5;  /* fondo de badges de éxito */
+  --success-alt: #34D399;
+  --warning: #F59E0B;
+
+  /* --- Ampliación de paleta: propuestas comerciales ---
+     Estos tres NO salen de nominaas.com: vienen del deck de referencia
+     que Hernán aprobó (referencia/Propuesta_Zamabrands.pptx) y que citó
+     explícitamente como el diseño a igualar ("te pasé la carpeta de
+     referencias para que vieras el diseño"). No son accidentes de esa
+     plantilla ni colores aproximados a descartar — son parte del sistema
+     visual aprobado, ampliado a propósito para las propuestas.
+     Importante: el azul y el naranja de esa misma referencia (hex
+     0B1D5C y F26A1B, sin gato a propósito para no colarse a la paleta
+     válida) SÍ son aproximaciones a evitar — los oficiales del sitio
+     (--primary, --accent arriba) no cambian. Solo se suman estos tres. */
+  --vino: #6B1E44;   /* badges circulares numerados del diagnóstico; tarjeta
+                         destacada del esquema anual ("mejor valor") */
+  --dorado: #F59E0B; /* cifras de precio sobre fondos oscuros (esquemas,
+                         costo de implementación); el badge "MEJOR VALOR".
+                         Mismo hex que --warning, pero es un token aparte:
+                         aquí el rol es de énfasis de precio, no de alerta. */
+  --crema: #FDF1E6;  /* bandas de remate al pie de una lámina: el ahorro
+                         anual en esquemas, "consideraciones" en la
+                         propuesta económica, el aviso del calendario */
+
+  /* --- Sombras --- */
+  --shadow-xs: 0 1px 2px rgba(16, 27, 51, 0.06);
+  --shadow-sm: 0 2px 6px rgba(16, 27, 51, 0.06), 0 1px 2px rgba(16, 27, 51, 0.04);
+  --shadow-md: 0 10px 24px -8px rgba(16, 27, 51, 0.14), 0 3px 8px -4px rgba(16, 27, 51, 0.08);
+  --shadow-lg: 0 22px 48px -14px rgba(16, 27, 51, 0.20), 0 8px 18px -10px rgba(16, 27, 51, 0.10);
+  --shadow-xl: 0 36px 70px -18px rgba(16, 27, 51, 0.28), 0 12px 28px -12px rgba(16, 27, 51, 0.14);
+  --shadow-accent: 0 10px 30px -6px rgba(255, 107, 53, 0.45);
+
+  /* --- Tipografía ---
+     Clash Display: titulares (pesos 500/600/700)
+     Satoshi: cuerpo y UI (pesos 400/500/700)
+     Carga oficial (Fontshare):
+     https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap */
+  --font-display: 'Clash Display', 'Satoshi', system-ui, sans-serif;
+  --font-sans: 'Satoshi', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Escala observada (desktop) */
+  --fs-h1: 55px;   /* peso 600 */
+  --fs-h2: 38px;   /* peso 600 */
+  --fs-body: 18px; /* peso 400 */
+
+  /* --- Radios --- */
+  --radius-sm: 10px;   /* botones chicos, inputs */
+  --radius: 14px;      /* botones/cards estándar (CTAs usan 12px) */
+  --radius-lg: 22px;   /* cards grandes, mockups */
+  --radius-pill: 50px; /* pills, tabs, badges */
+
+  /* --- Transiciones --- */
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}

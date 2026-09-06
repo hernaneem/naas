@@ -1,0 +1,73 @@
+# Catálogo de precios NaaS — precio de lista.
+# Fuente: https://nominaas.com/precios.html
+# Confirmado por Hernán el 2026-07-25.
+#
+# Los precios negociados para un trato específico NO van aquí: viven en el
+# expediente del prospecto y ganan sobre este catálogo (ver spec §6.6.1).
+version: "2026-07-25"
+moneda: MXN
+vigencia_propuesta_dias: 30
+
+modulos:
+  - clave: nomina
+    nombre: Nómina
+    precio: "45"
+    base: true
+    incluye:
+      - Cálculo y timbrado CFDI
+      - Conexión IDSE para altas, bajas y modificaciones
+      - Confrontas IMSS y SAT, SUA
+      - Layouts de pago bancarios
+      - Directorio de colaboradores y expediente digital
+      - Organigramas
+      - Vacaciones, permisos e incidencias
+      - Reportes de nómina
+      - Portal del colaborador
+
+  - clave: turnos
+    nombre: Turnos y asistencias
+    precio: "25"
+    base: false
+    incluye:
+      - Conexión a relojes checadores
+      - Reloj virtual con geolocalización
+      - Registro de entradas y salidas con valor legal
+      - Horas extra con autorización previa
+      - Alimentación automática de la nómina
+
+  - clave: onboarding
+    nombre: Onboarding y gestión de talento
+    precio: "35"
+    base: false
+    incluye:
+      - Solicitud de documentos por WhatsApp
+      - Prueba de vida y validación de identidad
+      - Revisión de documentos y antecedentes
+      - ATS y reclutamiento asistido por IA
+      - Firma digital NOM-151
+
+esquemas:
+  - clave: mensual
+    nombre: Paquete completo mensual
+    descuento: "0"
+    compromiso_meses: null
+    # Mes a mes: cada mes se factura y se cobra por separado, sin adelanto.
+    pago_anticipado_meses: null
+  - clave: anual
+    nombre: Paquete completo anual
+    descuento: "0.15"
+    compromiso_meses: 12
+    # El 15% de descuento NO es (solo) por comprometerse a permanecer 12
+    # meses: es a cambio de que el cliente pague los 12 meses del año de
+    # una sola vez, por adelantado. Es una condición de flujo de efectivo,
+    # distinta de la permanencia, y debe quedar impresa en la propuesta.
+    # Confirmado por el dueño del producto el 2026-07-25 (ver spec §6.6.1).
+    pago_anticipado_meses: 12
+
+implementacion:
+  meses_de_servicio: 2
+  pagos:
+    - concepto: A la firma del contrato
+      proporcion: "0.5"
+    - concepto: A la salida en vivo
+      proporcion: "0.5"
