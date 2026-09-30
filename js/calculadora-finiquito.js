@@ -1,7 +1,7 @@
 // Interfaz de la calculadora de finiquito: lee el formulario, llama al motor y pinta.
 // Toda la lógica de dinero vive en calculos-laborales.js. Aquí solo hay DOM.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
-import { calcularFiniquito, diasVacacionesLey, MINIMOS_LEY } from './calculos-laborales.js';
+import { anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY } from './calculos-laborales.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -114,19 +114,8 @@ function leerSueldo() {
   return { tipo, capturado, diario: capturado };
 }
 
-/** Año de servicio en curso según las fechas, usando el propio motor; null si las fechas no sirven. */
-function anioServicioActual() {
-  const r = calcularFiniquito({
-    salarioDiario: 1,
-    fechaAntiguedad: campos.fechaAntiguedad.value,
-    fechaBaja: campos.fechaBaja.value,
-    periodicidad: 'quincenal',
-  });
-  return r.valido ? r.conceptos.vacaciones.anioServicio : null;
-}
-
 function sincronizarDiasVacacionesLey() {
-  const anio = anioServicioActual();
+  const anio = anioDeServicio(campos.fechaAntiguedad.value, campos.fechaBaja.value);
   if (anio === null) return;
   const minimo = diasVacacionesLey(anio);
   $('diasVacacionesHint').textContent = `Mínimo de ley para tu año de servicio ${anio}: ${minimo}.`;
@@ -223,8 +212,18 @@ function paso(titulo, lineas) {
   ]);
 }
 
-/** La suposición del sueldo pendiente (D1). Si el periodo pagado termina después de la baja, se dice así. */
-function textoPagadoHasta(pagadoHasta, fechaBaja) {
+/** Las fechas 'YYYY-MM-DD' se comparan bien como texto. */
+const sinPagoDesdeAntiguedad = (pagadoHasta, fechaAntiguedad) => pagadoHasta < fechaAntiguedad;
+
+/**
+ * La suposición del sueldo pendiente (D1). Si el periodo pagado termina después de la baja, se dice así;
+ * si es anterior a la fecha de antigüedad (D11), no se muestra esa fecha.
+ */
+function textoPagadoHasta(pagadoHasta, fechaAntiguedad, fechaBaja) {
+  if (sinPagoDesdeAntiguedad(pagadoHasta, fechaAntiguedad)) {
+    return `Suponemos que aún no te han pagado nada desde tu fecha de antigüedad (${fmtFecha(fechaAntiguedad)}), ` +
+      'así que se cuentan todos los días que trabajaste.';
+  }
   if (pagadoHasta > fechaBaja) {
     return `Suponemos que tu último pago ya cubrió tu fecha de baja (su periodo termina el ${fmtFecha(pagadoHasta)}).`;
   }
@@ -238,11 +237,14 @@ function pintarComoSeCalculo(entrada, r) {
 
   const lineasSueldo = sp.dias > 0
     ? [
-      ['t', `Con nómina ${entrada.periodicidad}, suponemos que tu último pago cubrió hasta el ${fmtFecha(sp.pagadoHasta)}. ` +
+      ['t', `Con nómina ${entrada.periodicidad}, ` +
+        (sinPagoDesdeAntiguedad(sp.pagadoHasta, entrada.fechaAntiguedad)
+          ? 'suponemos que aún no te han pagado nada desde tu fecha de antigüedad. '
+          : `suponemos que tu último pago cubrió hasta el ${fmtFecha(sp.pagadoHasta)}. `) +
         `Del ${fmtFecha(sumarDias(sp.pagadoHasta, 1))} al ${fmtFecha(entrada.fechaBaja)} van ${fmtNum(sp.dias)} días.`],
       ['f', `${fmtNum(sp.dias)} días × ${sd} = ${fmtMonto(sp.monto)}`],
     ]
-    : [['t', `Con nómina ${entrada.periodicidad}: ${textoPagadoHasta(sp.pagadoHasta, entrada.fechaBaja)} No hay sueldo pendiente.`]];
+    : [['t', `Con nómina ${entrada.periodicidad}: ${textoPagadoHasta(sp.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja)} No hay sueldo pendiente.`]];
 
   const brutas = (v.diasAnio * v.diasTranscurridos) / 365;
   const lineasVac = [
@@ -337,7 +339,7 @@ function pintarResultado(entrada, sueldo, r, erroresVisibles) {
     filaConcepto('Aguinaldo proporcional', `${fmtDias(ag.dias)} días`, ag.monto),
   );
 
-  const notas = [nota('info', textoPagadoHasta(sp.pagadoHasta, entrada.fechaBaja))];
+  const notas = [nota('info', textoPagadoHasta(sp.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja))];
   if (v.notaNegativo) notas.push(nota('info', v.notaNegativo));
   for (const aviso of r.avisos) notas.push(nota('aviso', aviso.mensaje));
   $('notas').replaceChildren(...notas);
