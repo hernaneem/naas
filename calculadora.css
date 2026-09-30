@@ -481,7 +481,7 @@
 
 .calc-result-top {
     position: sticky;
-    top: 92px;
+    top: 72px; /* alto del header fijo: sin hueco por donde asome el desglose */
     z-index: 1;
     padding: 1.6rem 1.75rem 1.5rem;
     background: var(--bg-gradient);
