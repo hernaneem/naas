@@ -4,6 +4,92 @@
 export const SALARIO_MINIMO_2026 = Object.freeze({ general: 315.04, fronteraNorte: 440.87 });
 export const MINIMOS_LEY = Object.freeze({ diasAguinaldo: 15, primaVacacional: 25 });
 
+// ==== Cifras fiscales · VIGENTE 2026 ====
+// Actualizar cada enero/febrero (spec ISR, I8). Fuentes:
+// - Tarifas art. 96 LISR: Anexo 8 RMF 2026, DOF 28-12-2025, apartado B, fr. II (7 días), IV (15 días) y V (mensual).
+// - UMA 2026: DOF 09-01-2026 (INEGI), $117.31 diarios, vigente desde el 01-02-2026.
+// - Exenciones: art. 93 fr. XIV LISR (aguinaldo 30 UMA, prima vacacional 15 UMA por año calendario).
+// Detalle: docs/research/2026-09-30-isr-finiquito-aguinaldo.md
+// Renglones: [límite inferior, cuota fija, % sobre excedente del límite inferior].
+
+export const UMA_2026 = 117.31;
+
+const TARIFAS_ISR_2026 = Object.freeze({
+  semanal: [
+    [0.01, 0.00, 1.92],
+    [194.47, 3.71, 6.40],
+    [1650.68, 96.95, 10.88],
+    [2900.88, 232.96, 16.00],
+    [3372.12, 308.35, 17.92],
+    [4037.33, 427.56, 21.36],
+    [8142.76, 1304.45, 23.52],
+    [12834.09, 2407.86, 30.00],
+    [24502.46, 5908.35, 32.00],
+    [32669.92, 8521.94, 34.00],
+    [98009.67, 30737.49, 35.00],
+  ],
+  quincenal: [
+    [0.01, 0.00, 1.92],
+    [416.71, 7.95, 6.40],
+    [3537.16, 207.75, 10.88],
+    [6216.16, 499.20, 16.00],
+    [7225.96, 660.75, 17.92],
+    [8651.41, 916.20, 21.36],
+    [17448.76, 2795.25, 23.52],
+    [27501.61, 5159.70, 30.00],
+    [52505.26, 12660.75, 32.00],
+    [70006.96, 18261.30, 34.00],
+    [210020.71, 65866.05, 35.00],
+  ],
+  mensual: [
+    [0.01, 0.00, 1.92],
+    [844.60, 16.22, 6.40],
+    [7168.52, 420.95, 10.88],
+    [12598.03, 1011.68, 16.00],
+    [14644.65, 1339.14, 17.92],
+    [17533.65, 1856.84, 21.36],
+    [35362.84, 5665.16, 23.52],
+    [55736.69, 10457.09, 30.00],
+    [106410.51, 25659.23, 32.00],
+    [141880.67, 37009.69, 34.00],
+    [425642.00, 133488.54, 35.00],
+  ],
+});
+
+/** Topes anuales de exención en UMA diarias (art. 93 fr. XIV LISR). Los conceptos sin tope gravan completo. */
+const EXENCION_UMA_2026 = Object.freeze({ aguinaldo: 30, primaVacacional: 15 });
+
+/** Topes anuales de exención en pesos: aguinaldo $3,519.30, prima vacacional $1,759.65. */
+export const TOPES_EXENCION_2026 = Object.freeze(Object.fromEntries(
+  Object.entries(EXENCION_UMA_2026).map(([concepto, umas]) => [concepto, Math.round(umas * UMA_2026 * 100) / 100]),
+));
+
+/** Días del sueldo del periodo por periodicidad (Anexo 8: 7 y 15 días; mensual = 30.4). */
+export const DIAS_PERIODO_ISR = Object.freeze({ semanal: 7, quincenal: 15, mensual: 30.4 });
+
+/** Periodicidades de nómina válidas: las que tienen tarifa ISR. Única fuente para validar. */
+export const PERIODICIDADES = Object.freeze(Object.keys(TARIFAS_ISR_2026));
+
+// ==== Fin de cifras fiscales 2026 ====
+
+/**
+ * ISR del periodo (art. 96 LISR) con la tarifa 2026 de la periodicidad.
+ * Renglón = el último cuyo límite inferior ≤ base. `isr` sin redondear. Base menor a $0.01 → ISR 0, sin renglón.
+ */
+export function calcularIsrPeriodo(base, periodicidad) {
+  if (!Object.hasOwn(TARIFAS_ISR_2026, periodicidad)) throw new RangeError(`Periodicidad sin tarifa ISR: ${periodicidad}`);
+  const tarifa = TARIFAS_ISR_2026[periodicidad];
+  let fila = null;
+  for (const f of tarifa) if (f[0] <= base) fila = f;
+  if (!fila) return { base, renglon: null, isr: 0 };
+  const [limiteInferior, cuotaFija, porcentaje] = fila;
+  return {
+    base,
+    renglon: { limiteInferior, cuotaFija, porcentaje },
+    isr: cuotaFija + ((base - limiteInferior) * porcentaje) / 100,
+  };
+}
+
 /** Días de vacaciones de ley (LFT 2023) para un año de servicio (1, 2, 3…). */
 export function diasVacacionesLey(anioServicio) {
   if (anioServicio <= 5) return 10 + 2 * anioServicio;
@@ -34,11 +120,10 @@ function ultimoDiaDelMes(anio, mes) {
 
 const formatoDias = (x) => x.toFixed(2);
 
-const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
+/** Redondeo a centavos del motor (también lo usa la interfaz para mostrar cifras intermedias). */
+export const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
 
 const esNumero = (x) => typeof x === 'number' && Number.isFinite(x);
-
-const PERIODICIDADES = ['semanal', 'quincenal', 'mensual'];
 
 /** 'YYYY-MM-DD' → número de día, o null si no es una fecha real. */
 function leerFecha(texto) {
@@ -96,6 +181,12 @@ function validarSalario(salarioDiario, error, avisos) {
   }
 }
 
+function validarPeriodicidad(periodicidad, error) {
+  if (!PERIODICIDADES.includes(periodicidad)) {
+    error('periodicidad', 'Elige la periodicidad de tu nómina: semanal, quincenal o mensual.');
+  }
+}
+
 /**
  * Aguinaldo proporcional (D4 / A1), la única implementación de la regla.
  * Días trabajados = del 1 de enero del año de `hasta` (o de la antigüedad, si es posterior) a `hasta`,
@@ -132,6 +223,47 @@ export function anioDeServicio(fechaAntiguedad, fechaBaja) {
   return ultimoAniversarioYAnios(antiguedad, baja).anios + 1;
 }
 
+/**
+ * ISR estimado de pagos extraordinarios (spec ISR, I1–I4, I7). `montos`: { concepto: monto redondeado }.
+ * Tope de exención por concepto: TOPES_EXENCION_2026 (sin tope → grava completo; topeExento y topeUma null).
+ * ISR = ISR(sueldo del periodo + gravado) − ISR(sueldo del periodo), nunca negativo, a centavos al final.
+ * El sueldo del periodo y las dos bases se redondean a centavos antes de aplicar la tarifa
+ * (diferencia de ≤ $0.01 frente a no redondearlos).
+ * Salario diario ≤ mínimo general → `salarioMinimo: true` e ISR 0.
+ */
+function estimarIsr(salarioDiario, periodicidad, montos) {
+  const conceptos = {};
+  let exentoTotal = 0;
+  let gravadoTotal = 0;
+  for (const [nombre, monto] of Object.entries(montos)) {
+    const topeExento = TOPES_EXENCION_2026[nombre] ?? null;
+    const topeUma = EXENCION_UMA_2026[nombre] ?? null;
+    const exento = Math.min(monto, topeExento ?? 0);
+    const gravado = redondear(monto - exento);
+    conceptos[nombre] = { monto, exento, gravado, topeExento, topeUma };
+    exentoTotal += exento;
+    gravadoTotal += gravado;
+  }
+  exentoTotal = redondear(exentoTotal);
+  gravadoTotal = redondear(gravadoTotal);
+  const sueldoPeriodo = redondear(salarioDiario * DIAS_PERIODO_ISR[periodicidad]);
+  const ordinario = calcularIsrPeriodo(sueldoPeriodo, periodicidad);
+  const conExtra = calcularIsrPeriodo(redondear(sueldoPeriodo + gravadoTotal), periodicidad);
+  // Art. 96 LISR: no se retiene a quien gana el salario mínimo; se llenan bases para explicar el cálculo.
+  const salarioMinimo = salarioDiario <= SALARIO_MINIMO_2026.general;
+  return {
+    periodicidad,
+    sueldoPeriodo,
+    conceptos,
+    exentoTotal,
+    gravadoTotal,
+    ordinario,
+    conExtra,
+    salarioMinimo,
+    isr: salarioMinimo ? 0 : redondear(Math.max(0, conExtra.isr - ordinario.isr)),
+  };
+}
+
 export function calcularFiniquito({
   salarioDiario,
   fechaAntiguedad,
@@ -155,9 +287,7 @@ export function calcularFiniquito({
   if (ordenInvalido) error('fechaBaja', 'La fecha de baja no puede ser anterior a la fecha de antigüedad.');
   const fechasValidas = antiguedad !== null && baja !== null && !ordenInvalido;
 
-  if (!PERIODICIDADES.includes(periodicidad)) {
-    error('periodicidad', 'Elige la periodicidad de tu nómina: semanal, quincenal o mensual.');
-  }
+  validarPeriodicidad(periodicidad, error);
 
   if (!esNumero(vacacionesTomadas) || vacacionesTomadas < 0) {
     error('vacacionesTomadas', 'Los días de vacaciones que ya tomaste deben ser cero o más.');
@@ -185,7 +315,7 @@ export function calcularFiniquito({
     }
   }
 
-  if (errores.length > 0) return { valido: false, errores, avisos, conceptos: null, total: null };
+  if (errores.length > 0) return { valido: false, errores, avisos, conceptos: null, total: null, isr: null, neto: null };
 
   const diasAnio = prestaciones ? prestaciones.diasVacaciones : diasVacacionesLey(anioServicio);
   const porcentajePrima = prestaciones ? prestaciones.primaVacacional : MINIMOS_LEY.primaVacacional;
@@ -243,7 +373,15 @@ export function calcularFiniquito({
     conceptos.primaVacacional.monto + conceptos.aguinaldo.monto,
   );
 
-  return { valido: true, errores, avisos, conceptos, total };
+  // I2: el sueldo pendiente y las vacaciones gravan completos (sin tope de exención).
+  const isr = estimarIsr(salarioDiario, periodicidad, {
+    sueldoPendiente: conceptos.sueldoPendiente.monto,
+    vacaciones: conceptos.vacaciones.monto,
+    primaVacacional: conceptos.primaVacacional.monto,
+    aguinaldo: conceptos.aguinaldo.monto,
+  });
+
+  return { valido: true, errores, avisos, conceptos, total, isr, neto: redondear(total - isr.isr) };
 }
 
 /**
@@ -255,6 +393,7 @@ export function calcularAguinaldo({
   fechaAntiguedad,
   fechaCorte,
   diasAguinaldo = MINIMOS_LEY.diasAguinaldo,
+  periodicidad = 'quincenal',
 } = {}) {
   const errores = [];
   const avisos = [];
@@ -276,7 +415,11 @@ export function calcularAguinaldo({
     error('diasAguinaldo', `Los días de aguinaldo no pueden ser menos de ${MINIMOS_LEY.diasAguinaldo}, el mínimo de ley.`);
   }
 
-  if (errores.length > 0) return { valido: false, errores, avisos, aguinaldo: null };
+  validarPeriodicidad(periodicidad, error);
 
-  return { valido: true, errores, avisos, aguinaldo: aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario) };
+  if (errores.length > 0) return { valido: false, errores, avisos, aguinaldo: null, isr: null, neto: null };
+
+  const aguinaldo = aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario);
+  const isr = estimarIsr(salarioDiario, periodicidad, { aguinaldo: aguinaldo.monto });
+  return { valido: true, errores, avisos, aguinaldo, isr, neto: redondear(aguinaldo.monto - isr.isr) };
 }

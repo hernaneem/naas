@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de aguinaldo 2026 gratis | NaaS</title>
-    <meta name="description" content="Calcula gratis tu aguinaldo 2026 con la Ley Federal del Trabajo: completo o proporcional a los días trabajados, con tu sueldo diario o mensual y la fórmula paso a paso.">
+    <meta name="description" content="Calcula gratis tu aguinaldo 2026 con la Ley Federal del Trabajo: completo o proporcional, con el ISR estimado, lo que recibirías neto y la fórmula paso a paso.">
     <link rel="canonical" href="https://nominaas.com/calculadora-aguinaldo.html">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="es_MX">
@@ -20,14 +20,14 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="calculadora.css?v=20260930">
+    <link rel="stylesheet" href="calculadora.css?v=20260930c">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "Calculadora de aguinaldo 2026",
         "url": "https://nominaas.com/calculadora-aguinaldo.html",
-        "description": "Calculadora gratuita del aguinaldo en México con la Ley Federal del Trabajo: aguinaldo completo o proporcional a los días trabajados en el año.",
+        "description": "Calculadora gratuita del aguinaldo en México con la Ley Federal del Trabajo: aguinaldo completo o proporcional a los días trabajados en el año, con el ISR estimado con la tarifa 2026.",
         "applicationCategory": "FinanceApplication",
         "operatingSystem": "Web",
         "inLanguage": "es-MX",
@@ -78,7 +78,7 @@
                 "name": "¿El aguinaldo paga ISR?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Una parte del aguinaldo está exenta de ISR y el resto sí paga impuesto. Esta calculadora muestra el monto bruto, antes de ISR."
+                    "text": "Solo una parte. El aguinaldo está exento de ISR hasta 30 UMA al año ($3,519.30 en 2026) y lo que pasa de ese tope paga ISR. Esta calculadora estima ese ISR con la tarifa 2026 de tu periodicidad de nómina y te muestra el neto aproximado, sin descontar IMSS, INFONAVIT ni otras deducciones."
                 }
             }
         ]
@@ -182,12 +182,33 @@
                             <p class="calc-error" id="err-diasAguinaldo" hidden></p>
                         </div>
                     </fieldset>
+
+                    <!-- Periodicidad -->
+                    <fieldset class="calc-group" data-campo="periodicidad" aria-describedby="periodicidadHint">
+                        <legend class="calc-group-title"><span class="calc-step" aria-hidden="true">4</span> Periodicidad de tu nómina</legend>
+                        <div class="calc-segmented calc-segmented-3">
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="semanal">
+                                <span>Semanal</span>
+                            </label>
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="quincenal" checked>
+                                <span>Quincenal</span>
+                            </label>
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="mensual">
+                                <span>Mensual</span>
+                            </label>
+                        </div>
+                        <p class="calc-hint" id="periodicidadHint">La usamos para estimar el ISR con la tarifa de tu periodo.</p>
+                        <p class="calc-error" id="err-periodicidad" hidden></p>
+                    </fieldset>
                 </form>
 
                 <!-- Barra fija en móvil con el total: sin live region (el anuncio ya lo hace #totalAnuncio) -->
                 <div class="calc-barra" id="barraTotal" hidden>
                     <p class="calc-barra-texto">
-                        <span class="calc-barra-label">Aguinaldo estimado</span>
+                        <span class="calc-barra-label">Neto estimado, después de ISR</span>
                         <span class="calc-barra-monto" id="barraTotalMonto"></span>
                     </p>
                     <a class="calc-barra-link" href="#resultado-aguinaldo">Ver detalle</a>
@@ -203,9 +224,10 @@
 
                         <div class="calc-result-top">
                             <h2 id="resultadoTitulo" class="calc-result-title">Tu aguinaldo estimado</h2>
+                            <p class="calc-total-label" aria-hidden="true">Neto estimado, después de ISR</p>
                             <p class="calc-total" id="total" aria-hidden="true">—</p>
                             <p class="sr-only" id="totalAnuncio" role="status" aria-live="polite" aria-atomic="true"></p>
-                            <p class="calc-total-sub" id="totalSub">Monto bruto, antes de ISR</p>
+                            <p class="calc-total-sub" id="totalSub">Neto después de ISR estimado</p>
                         </div>
 
                         <div class="calc-result-body">
@@ -242,12 +264,20 @@
                                 </button>
                             </div>
 
-                            <ul class="calc-legal">
-                                <li>Monto bruto, antes de ISR.</li>
-                                <li>Es una estimación, no asesoría legal.</li>
-                                <li>Las faltas injustificadas se descuentan de los días trabajados.</li>
-                                <li>La ley obliga a pagarlo antes del 20 de diciembre.</li>
-                            </ul>
+                            <div class="calc-legal">
+                                <p class="calc-legal-title">Sobre el ISR</p>
+                                <ul>
+                                    <li>Cálculo con tarifas ISR 2026. No incluye cuotas IMSS, INFONAVIT ni otras deducciones.</li>
+                                    <li>Tu ISR puede ser menor: no se resta el subsidio para el empleo (aplica si ganas menos de ~$11,500 al mes) y tu empresa puede usar un método opcional de la ley (art. 174 del Reglamento de la LISR) que suele retener menos.</li>
+                                    <li>Supone que este año no has usado tu exención de aguinaldo.</li>
+                                </ul>
+                                <p class="calc-legal-title">Sobre el cálculo</p>
+                                <ul>
+                                    <li>Es una estimación, no asesoría legal.</li>
+                                    <li>Las faltas injustificadas se descuentan de los días trabajados.</li>
+                                    <li>La ley obliga a pagarlo antes del 20 de diciembre.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -279,7 +309,7 @@
                     </details>
                     <details>
                         <summary><h3>¿El aguinaldo paga ISR?</h3><i class='bx bx-plus' aria-hidden="true"></i></summary>
-                        <p>Una parte del aguinaldo está exenta de ISR y el resto sí paga impuesto. Esta calculadora muestra el monto bruto, antes de ISR.</p>
+                        <p>Solo una parte. El aguinaldo está exento de ISR hasta 30 UMA al año ($3,519.30 en 2026) y lo que pasa de ese tope paga ISR. Esta calculadora estima ese ISR con la tarifa 2026 de tu periodicidad de nómina y te muestra el neto aproximado, sin descontar IMSS, INFONAVIT ni otras deducciones.</p>
                     </details>
                 </div>
             </div>
@@ -345,6 +375,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script type="module" src="js/calculadora-aguinaldo.js?v=20260930"></script>
+    <script type="module" src="js/calculadora-aguinaldo.js?v=20260930c"></script>
 </body>
 </html>

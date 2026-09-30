@@ -4,15 +4,20 @@
 //
 // Contrato con el HTML: cada página de calculadora debe tener estos elementos.
 //   Formulario: radios name="tipoSueldo" (diario | mensual), #sueldo, #sueldoLabel, #diarioDerivado,
+//     radios name="periodicidad" (semanal | quincenal | mensual) en un fieldset[data-campo="periodicidad"],
 //     y una caja #err-<campo> por cada campo del motor que se pase a pintarErrores.
-//   Resultado: .calc-result, .calc-result-top, #resultado, #estadoVacio, #estadoError, #total, #totalAnuncio,
-//     #desglose, #notas, #comoSeCalculo (<details>), #comoSeCalculoCuerpo, #datosCapturados, #imprimir.
+//   Resultado: .calc-result, .calc-result-top, #resultado, #estadoVacio, #estadoError, #total (neto estimado),
+//     #totalSub (bruto − ISR estimado), #totalAnuncio, #desglose, #notas, #comoSeCalculo (<details>),
+//     #comoSeCalculoCuerpo, #datosCapturados, #imprimir.
 //   Barra fija en móvil: #barraTotal y #barraTotalMonto.
 //
 // Caché entre deploys: los módulos se cargan con ?v=AAAAMMDD en los <script type="module">, en el
-// <link> de calculadora.css y en TODOS los imports relativos entre módulos. Al cambiar cualquier módulo
+// <link> de calculadora.css y en TODOS los imports relativos entre módulos; si hay varios deploys el
+// mismo día se agrega una letra (?v=20260930b, ?v=20260930c…). Al cambiar cualquier módulo
 // (o calculadora.css), sube la versión en todos esos lugares a la vez para que nunca se mezclen
 // un módulo nuevo y uno viejo en caché.
+
+import { UMA_2026, SALARIO_MINIMO_2026, DIAS_PERIODO_ISR, redondear } from './calculos-laborales.js?v=20260930c';
 
 export const $ = (id) => document.getElementById(id);
 
@@ -25,6 +30,9 @@ const hastaDosDecimales = new Intl.NumberFormat('es-MX', { maximumFractionDigits
 export const fmtMonto = (x) => moneda.format(x);
 export const fmtDias = (x) => dosDecimales.format(x);
 export const fmtNum = (x) => hastaDosDecimales.format(x);
+
+/** 'quincenal' → 'Quincenal'. */
+export const fmtPeriodicidad = (periodicidad) => periodicidad.charAt(0).toUpperCase() + periodicidad.slice(1);
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
   'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -74,9 +82,12 @@ export function el(tag, opciones = {}, hijos = []) {
 
 export const icono = (nombre) => el('i', { clase: `bx ${nombre}`, attrs: { 'aria-hidden': 'true' } });
 
-/** Fila del desglose: nombre, detalle en gris y un valor ya formateado a la derecha. */
-export function filaValor(nombre, detalle, valor) {
-  return el('li', { clase: 'calc-line' }, [
+/**
+ * Fila del desglose: nombre, detalle en gris y un valor ya formateado a la derecha.
+ * `variante`: clase extra opcional (filas de cierre).
+ */
+export function filaValor(nombre, detalle, valor, variante = '') {
+  return el('li', { clase: `calc-line ${variante}`.trim() }, [
     el('span', { clase: 'calc-line-name' }, [
       el('span', { texto: nombre }),
       el('span', { clase: 'calc-line-detail', texto: detalle }),
@@ -88,17 +99,34 @@ export function filaValor(nombre, detalle, valor) {
 /** Fila del desglose con un monto en pesos. */
 export const filaConcepto = (nombre, detalle, monto) => filaValor(nombre, detalle, fmtMonto(monto));
 
+/**
+ * Filas de cierre del desglose: bruto, menos ISR estimado y neto estimado, para que la suma cuadre con
+ * el número grande. `nombreBruto`/`detalleBruto`: cómo se llama el bruto en cada calculadora.
+ */
+export function filasCierre({ nombreBruto, detalleBruto, bruto, isr, neto }) {
+  return [
+    filaValor(nombreBruto, detalleBruto, fmtMonto(bruto), 'calc-line-subtotal'),
+    filaValor('ISR estimado', `Tarifa ${isr.periodicidad} 2026`, `−${fmtMonto(isr.isr)}`, 'calc-line-resta'),
+    filaValor('Neto estimado', 'Lo que recibirías, después de ISR', fmtMonto(neto), 'calc-line-neto'),
+  ];
+}
+
 /** Nota bajo el resultado: 'info' o 'aviso'. */
 export function nota(tipo, texto) {
   const nombreIcono = tipo === 'aviso' ? 'bx-error' : 'bx-info-circle';
   return el('p', { clase: `calc-note calc-note-${tipo}` }, [icono(nombreIcono), el('span', { texto })]);
 }
 
-/** Paso de "¿Cómo se calculó?": líneas [['t', texto] | ['f', fórmula]]. */
-export function paso(titulo, lineas) {
+const CLASE_LINEA = { t: 'calc-how-text', f: 'calc-formula', r: 'calc-formula calc-formula-result' };
+
+/**
+ * Paso de "¿Cómo se calculó?": líneas [['t', texto] | ['f', fórmula] | ['r', fórmula con el resultado del paso]].
+ * `nivel`: etiqueta del título.
+ */
+export function paso(titulo, lineas, nivel = 'h4') {
   return el('div', { clase: 'calc-how-step' }, [
-    el('h4', { texto: titulo }),
-    ...lineas.map(([tipo, texto]) => el('p', { clase: tipo === 'f' ? 'calc-formula' : undefined, texto })),
+    el(nivel, { texto: titulo }),
+    ...lineas.map(([tipo, texto]) => el('p', { clase: CLASE_LINEA[tipo], texto })),
   ]);
 }
 
@@ -114,6 +142,133 @@ export function lineasAguinaldo(aguinaldo, salarioDiario, deEmpresa) {
     dias: ['f', `${fmtNum(diasAguinaldo)} × ${fmtNum(diasTrabajados)} ÷ 365 = ${fmtDias(dias)} días`],
     monto: ['f', `${fmtDias(dias)} días × ${fmtMonto(salarioDiario)} = ${fmtMonto(monto)}`],
   };
+}
+
+// ---- ISR estimado y neto (spec ISR, I6–I7) ----
+
+const fmtPorcentaje = (x) => `${dosDecimales.format(x)} %`;
+
+/**
+ * Número grande = neto estimado; debajo, bruto − ISR estimado; el anuncio para lectores de pantalla
+ * dice el neto. `nombre`: "Finiquito" o "Aguinaldo".
+ */
+export function pintarTotales(nombre, bruto, isr, neto) {
+  $('total').textContent = fmtMonto(neto);
+  $('totalSub').textContent = `Bruto ${fmtMonto(bruto)} − ISR estimado ${fmtMonto(isr.isr)}`;
+  $('totalAnuncio').textContent = `${nombre}: recibirías aprox. ${fmtMonto(neto)} después de ISR. ` +
+    `Bruto ${fmtMonto(bruto)}, ISR estimado ${fmtMonto(isr.isr)}.`;
+}
+
+/** Nota del salario mínimo (I7), o null si no aplica. */
+export function notaSalarioMinimo(isr) {
+  return isr.salarioMinimo
+    ? nota('info', 'A quien gana el salario mínimo no se le retiene ISR, así que recibirías el monto bruto completo.')
+    : null;
+}
+
+/** "Base …: $X. Renglón …" + fórmula del ISR de una base con su renglón de la tarifa. */
+function lineasBase(etiqueta, calculo) {
+  if (!calculo.renglon) {
+    return [['t', `${etiqueta}: ${fmtMonto(calculo.base)}. Es menor al primer renglón de la tarifa, así que su ISR es $0.00.`]];
+  }
+  const { limiteInferior, cuotaFija, porcentaje } = calculo.renglon;
+  return [
+    ['t', `${etiqueta}: ${fmtMonto(calculo.base)}. Renglón de la tarifa: límite inferior ${fmtMonto(limiteInferior)}, ` +
+      `cuota fija ${fmtMonto(cuotaFija)} y ${fmtPorcentaje(porcentaje)} sobre el excedente.`],
+    ['f', `${fmtMonto(cuotaFija)} + (${fmtMonto(calculo.base)} − ${fmtMonto(limiteInferior)}) × ${fmtPorcentaje(porcentaje)} = ` +
+      `${fmtMonto(redondear(calculo.isr))}`],
+  ];
+}
+
+/**
+ * Bloque "ISR estimado" de "¿Cómo se calculó?", igual en las dos calculadoras.
+ * `resultado`: salida del motor (usa `isr` y `neto`); `bruto`: total bruto; `nombres`: { concepto: etiqueta }.
+ * Los topes de exención y qué concepto grava completo vienen del motor (isr.conceptos).
+ * Devuelve un nodo con el título del bloque y sus pasos.
+ */
+export function bloqueIsr(resultado, { bruto, salarioDiario, nombres }) {
+  const { isr, neto } = resultado;
+  const pasos = [];
+  const tarifa = `tarifa ${isr.periodicidad} 2026`;
+
+  if (isr.salarioMinimo) {
+    pasos.push(paso('Salario mínimo', [
+      ['t', `Tu salario diario (${fmtMonto(salarioDiario)}) no pasa del salario mínimo general 2026 ` +
+        `(${fmtMonto(SALARIO_MINIMO_2026.general)}). A quien gana el salario mínimo no se le retiene ISR, ` +
+        'así que el ISR estimado es $0.00.'],
+    ], 'h5'));
+  } else {
+    // Parte exenta y parte gravada por concepto (I4).
+    const conceptos = Object.entries(isr.conceptos);
+    const conTope = conceptos.filter(([, c]) => c.topeExento !== null);
+    const sinTope = conceptos.filter(([, c]) => c.topeExento === null).map(([clave]) => clave);
+    const topesTexto = conTope.map(([clave, c]) =>
+      `${nombres[clave].toLowerCase()} hasta ${fmtNum(c.topeUma)} UMA (${fmtMonto(c.topeExento)})`);
+    const intro = [`Parte exenta de ISR: ${topesTexto.join(' y ')} al año (UMA 2026: ${fmtMonto(UMA_2026)} diarios).`];
+    if (sinTope.length > 0) {
+      const lista = sinTope.map((c, i) => (i === 0 ? nombres[c] : nombres[c].toLowerCase())).join(' y ');
+      intro.push(`${lista} ${sinTope.length > 1 ? 'pagan' : 'paga'} ISR completo.`);
+    }
+    intro.push('Suponemos que este año no has usado esa exención.');
+    const lineasExencion = [['t', intro.join(' ')]];
+    for (const [clave, { monto, exento, gravado, topeExento }] of conceptos) {
+      let texto;
+      if (topeExento === null) texto = `${nombres[clave]}: ${fmtMonto(monto)} gravado completo`;
+      else if (gravado === 0) texto = `${nombres[clave]}: ${fmtMonto(monto)} exento completo`;
+      else texto = `${nombres[clave]}: ${fmtMonto(monto)} = ${fmtMonto(exento)} exento + ${fmtMonto(gravado)} gravado`;
+      lineasExencion.push(['f', texto]);
+    }
+    // La suma de la parte gravada omite los conceptos sin parte gravada (exentos completos).
+    const conGravado = conceptos.filter(([, c]) => c.gravado > 0);
+    const sinGravado = conceptos.filter(([, c]) => c.gravado === 0).map(([clave]) => clave);
+    if (conceptos.length > 1 && conGravado.length > 0) {
+      const suma = conGravado.length > 1
+        ? `${conGravado.map(([, c]) => fmtMonto(c.gravado)).join(' + ')} = ${fmtMonto(isr.gravadoTotal)}`
+        : fmtMonto(isr.gravadoTotal);
+      let exentos = '';
+      if (sinGravado.length > 0) {
+        const lista = sinGravado.map((c) => nombres[c].toLowerCase()).join(' ni ');
+        exentos = sinGravado.length > 1
+          ? ` (no se suman ${lista}: sus montos están exentos completos)`
+          : ` (no se suma ${lista}: su monto está exento completo)`;
+      }
+      lineasExencion.push(['f', `Parte gravada total: ${suma}${exentos}`]);
+    }
+    pasos.push(paso('Parte exenta y parte gravada', lineasExencion, 'h5'));
+
+    // Sueldo del periodo (I2).
+    const dias = DIAS_PERIODO_ISR[isr.periodicidad];
+    pasos.push(paso('Sueldo del periodo', [
+      ['t', `Con nómina ${isr.periodicidad}, tu sueldo del periodo es tu salario diario por ${fmtNum(dias)} días.`],
+      ['f', `${fmtMonto(salarioDiario)} × ${fmtNum(dias)} = ${fmtMonto(isr.sueldoPeriodo)}`],
+    ], 'h5'));
+
+    // ISR incremental con la tarifa del periodo (I1).
+    let lineasTarifa;
+    if (isr.gravadoTotal === 0) {
+      lineasTarifa = [['t', 'Todo lo que recibes está exento, así que no se suma nada a tu sueldo del periodo ' +
+        'y el ISR estimado es $0.00.']];
+    } else {
+      const isrOrdinario = redondear(isr.ordinario.isr);
+      const isrConExtra = redondear(isr.conExtra.isr);
+      const ajuste = redondear(isrConExtra - isrOrdinario) === isr.isr ? '' : ' (con todos los decimales)';
+      lineasTarifa = [
+        ['t', 'Se calcula el ISR de tu sueldo del periodo solo y con la parte gravada sumada; ' +
+          'la diferencia es el ISR de este pago.'],
+        ...lineasBase('Base ordinaria (tu sueldo del periodo)', isr.ordinario),
+        ...lineasBase(`Base con la parte gravada (${fmtMonto(isr.sueldoPeriodo)} + ${fmtMonto(isr.gravadoTotal)})`, isr.conExtra),
+        ['r', `ISR estimado: ${fmtMonto(isrConExtra)} − ${fmtMonto(isrOrdinario)} = ${fmtMonto(isr.isr)}${ajuste}`],
+      ];
+    }
+    pasos.push(paso(`ISR con la ${tarifa}`, lineasTarifa, 'h5'));
+  }
+
+  pasos.push(paso('Neto estimado', [['r', `${fmtMonto(bruto)} − ${fmtMonto(isr.isr)} = ${fmtMonto(neto)}`]], 'h5'));
+
+  return el('section', { clase: 'calc-how-group', attrs: { 'aria-labelledby': 'comoIsrTitulo' } }, [
+    el('h4', { clase: 'calc-how-group-title', texto: 'ISR estimado', attrs: { id: 'comoIsrTitulo' } }),
+    ...pasos,
+  ]);
 }
 
 /** "Datos capturados" (solo se ve al imprimir): filas [[etiqueta, valor]]. */
@@ -143,7 +298,7 @@ export function leerSueldo(form) {
   const tipo = valorRadio(form, 'tipoSueldo');
   const capturado = leerNumero($('sueldo').value);
   if (tipo === 'mensual') {
-    const diario = Number.isFinite(capturado) ? Math.round((capturado / 30) * 100) / 100 : NaN;
+    const diario = Number.isFinite(capturado) ? redondear(capturado / 30) : NaN;
     return { tipo, capturado, diario };
   }
   return { tipo, capturado, diario: capturado };
@@ -223,6 +378,7 @@ export function conectarFormulario({ form, tocados, campoDeInput = {}, actualiza
 // ---- Resultado: estados vacío / error / listo ----
 
 const VACIAR_SIN_RESULTADO = ['desglose', 'notas', 'comoSeCalculoCuerpo', 'datosCapturados'];
+const TOTAL_SUB_VACIO = 'Neto después de ISR estimado';
 
 /**
  * Alterna estado vacío, estado de error y resultado; limpia el resultado si no hay.
@@ -235,16 +391,17 @@ export function pintarEstado({ hayResultado, erroresVisibles, vaciar = VACIAR_SI
   document.querySelector('.calc-result').classList.toggle('is-ready', hayResultado);
   if (!hayResultado) {
     $('total').textContent = '—';
+    $('totalSub').textContent = TOTAL_SUB_VACIO;
     $('totalAnuncio').textContent = '';
     for (const id of vaciar) $(id).replaceChildren();
   }
 }
 
-// ---- Barra fija con el total (solo con el resultado apilado) ----
+// ---- Barra fija con el neto estimado (solo con el resultado apilado) ----
 // Visible si hay total válido y el encabezado del resultado no está en pantalla.
 // Sin live region: el anuncio del total ya lo hace #totalAnuncio.
 
-/** Devuelve mostrarTotal(textoMonto | null). */
+/** Devuelve mostrarTotal(textoMonto | null); se le pasa el neto estimado ya formateado. */
 export function crearBarraTotal() {
   const estado = { hayTotal: false, totalEnPantalla: true };
   const apilado = window.matchMedia('(max-width: 60rem)');

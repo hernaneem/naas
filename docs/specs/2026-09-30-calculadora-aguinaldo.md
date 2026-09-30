@@ -64,7 +64,7 @@ Seam: `calcularAguinaldo` con `node --test`. Casos: año completo (15 días exac
 
 Igual que la ola 1: sitio estático, sin datos ni endpoints. Nada de `innerHTML` con datos capturados; `rel="noopener"` en `target="_blank"`.
 
-Caché entre deploys: `calculadora.css`, los `<script type="module">` y todos los imports relativos entre módulos llevan `?v=AAAAMMDD` (hoy `?v=20260930`). Al cambiar cualquier módulo o `calculadora.css` se sube la versión en todos esos lugares a la vez, para que tras un deploy nunca se mezcle un módulo nuevo con uno viejo en caché. Las pruebas de node importan el motor sin query.
+Caché entre deploys: `calculadora.css`, los `<script type="module">` y todos los imports relativos entre módulos llevan `?v=AAAAMMDD`, con sufijo de letra si hay varios deploys el mismo día (`?v=20260930b`, `?v=20260930c`…; hoy `?v=20260930c`). Al cambiar cualquier módulo o `calculadora.css` se sube la versión en todos esos lugares a la vez, para que tras un deploy nunca se mezcle un módulo nuevo con uno viejo en caché. Las pruebas de node importan el motor sin query.
 
 ## Fuera de alcance
 

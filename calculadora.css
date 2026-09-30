@@ -558,8 +558,15 @@
     color: rgba(255, 255, 255, 0.78);
 }
 
+.calc-total-label {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.78);
+}
+
 .calc-total {
-    margin: 0.35rem 0 0.2rem;
+    margin: 0.1rem 0 0.25rem;
     font-family: var(--font-display);
     font-size: clamp(2.3rem, 4vw, 2.9rem);
     font-weight: 600;
@@ -577,6 +584,8 @@
 .calc-total-sub {
     font-size: 0.88rem;
     color: rgba(255, 255, 255, 0.78);
+    font-variant-numeric: tabular-nums;
+    text-wrap: balance;
 }
 
 .calc-result-body {
@@ -655,6 +664,37 @@
     white-space: nowrap;
 }
 
+/* Filas de cierre: bruto − ISR estimado = neto estimado (cuadran con el número grande). */
+.calc-line:has(+ .calc-line-subtotal) {
+    border-bottom: 0;
+}
+
+.calc-line-subtotal {
+    border-top: 1px solid var(--text-muted);
+}
+
+.calc-line-subtotal .calc-line-name,
+.calc-line-resta .calc-line-name {
+    font-weight: 500;
+}
+
+.calc-line-resta .calc-line-amount {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.calc-line-neto {
+    margin: 0.5rem -0.75rem 0;
+    padding: 0.8rem 0.75rem;
+    border-bottom: 0;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+}
+
+.calc-line-neto .calc-line-amount {
+    font-size: 1.1rem;
+}
+
 .calc-notes {
     display: grid;
     gap: 0.5rem;
@@ -723,7 +763,8 @@
     border-top: 1px dashed var(--border-strong);
 }
 
-.calc-how-step h4 {
+.calc-how-step h4,
+.calc-how-step h5 {
     font-family: var(--font-sans);
     font-size: 0.88rem;
     font-weight: 700;
@@ -731,10 +772,36 @@
     margin-bottom: 0.3rem;
 }
 
+/* Bloque "ISR estimado": separado del cálculo bruto con una línea sólida y su título */
+.calc-how-group {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-strong);
+}
+
+.calc-how-group-title {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+}
+
 .calc-how-step p {
     font-size: 0.85rem;
     line-height: 1.55;
     text-wrap: pretty;
+}
+
+.calc-how-step .calc-how-text + .calc-how-text,
+.calc-how-step .calc-formula + .calc-how-text {
+    margin-top: 0.6rem;
+}
+
+.calc-how-step .calc-formula.calc-formula-result {
+    font-weight: 700;
 }
 
 .calc-how-step .calc-formula {
@@ -787,10 +854,24 @@
 }
 
 .calc-legal {
-    list-style: none;
     margin-top: 1.25rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border);
+}
+
+.calc-legal-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+}
+
+.calc-legal ul + .calc-legal-title {
+    margin-top: 0.9rem;
+}
+
+.calc-legal ul {
+    list-style: none;
     display: grid;
     gap: 0.3rem;
 }
@@ -1136,6 +1217,7 @@
     }
 
     .calc-result-title,
+    .calc-total-label,
     .calc-total-sub {
         color: #333;
     }
@@ -1154,6 +1236,12 @@
         padding: 5pt 0;
         border-bottom-color: #bbb;
         break-inside: avoid;
+    }
+
+    .calc-line-neto {
+        margin: 0;
+        padding: 5pt 0;
+        background: none;
     }
 
     .calc-line-detail,
@@ -1221,6 +1309,15 @@
 
     .calc-how-step {
         break-inside: avoid;
+    }
+
+    .calc-how-group {
+        border-top-color: #bbb;
+    }
+
+    .calc-how-group-title,
+    .calc-legal-title {
+        color: #333;
     }
 
     .calc-how-step .calc-formula {
