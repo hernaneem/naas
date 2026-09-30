@@ -336,6 +336,10 @@ function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
   $('estadoError').hidden = hayResultado || erroresVisibles === 0;
   document.querySelector('.calc-result').classList.toggle('is-ready', hayResultado);
 
+  barra.hayTotal = hayResultado;
+  $('barraTotalMonto').textContent = hayResultado ? fmtMonto(resultado.total) : '';
+  actualizarBarra();
+
   if (!hayResultado) {
     $('total').textContent = '—';
     $('totalAnuncio').textContent = '';
@@ -366,6 +370,29 @@ function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
   pintarComoSeCalculo(entrada, resultado);
   pintarDatosCapturados(entrada, sueldo);
 }
+
+// ---- Barra fija con el total (solo con el resultado apilado) ----
+// Visible si hay total válido y el encabezado del resultado no está en pantalla.
+// Sin live region: el anuncio del total ya lo hace #totalAnuncio.
+
+const barra = { hayTotal: false, totalEnPantalla: true };
+const apilado = window.matchMedia('(max-width: 60rem)');
+
+function actualizarBarra() {
+  const nodo = $('barraTotal');
+  const visible = apilado.matches && barra.hayTotal && !barra.totalEnPantalla;
+  nodo.hidden = !visible;
+  // Espacio para que la barra no tape el final de la página (footer, CTA).
+  document.body.style.paddingBottom = visible ? `${nodo.offsetHeight}px` : '';
+}
+
+if ('IntersectionObserver' in window) {
+  new IntersectionObserver(([entrada]) => {
+    barra.totalEnPantalla = entrada.isIntersecting;
+    actualizarBarra();
+  }, { rootMargin: '-64px 0px 0px 0px' }).observe(document.querySelector('.calc-result-top')); // 64px: header fijo
+}
+apilado.addEventListener('change', actualizarBarra);
 
 // ---- Ciclo ----
 

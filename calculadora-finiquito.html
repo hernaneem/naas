@@ -238,8 +238,17 @@
                     </div>
                 </form>
 
+                <!-- Barra fija en móvil con el total: sin live region (el anuncio ya lo hace #totalAnuncio) -->
+                <div class="calc-barra" id="barraTotal" hidden>
+                    <p class="calc-barra-texto">
+                        <span class="calc-barra-label">Finiquito estimado</span>
+                        <span class="calc-barra-monto" id="barraTotalMonto"></span>
+                    </p>
+                    <a class="calc-barra-link" href="#resultado-finiquito">Ver desglose</a>
+                </div>
+
                 <!-- Resultado -->
-                <aside class="calc-result" aria-labelledby="resultadoTitulo">
+                <aside class="calc-result" id="resultado-finiquito" aria-labelledby="resultadoTitulo">
                     <div class="calc-result-card">
                         <div class="calc-print-head" aria-hidden="true">
                             <strong>Calculadora de finiquito 2026 · NaaS</strong>
