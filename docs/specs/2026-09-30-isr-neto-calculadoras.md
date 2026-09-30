@@ -22,7 +22,7 @@ Ambas calculadoras muestran en grande el **neto estimado** y debajo "Bruto − I
 
 ## Decisiones
 
-**I1 (VoBo 2026-09-30, Q1) · Método art. 96 incremental.** ISR estimado = ISR(sueldo del periodo + parte gravada total) − ISR(sueldo del periodo), cada uno con la tarifa 2026 de la periodicidad (Anexo 8 RMF 2026: semanal 7 días, quincenal 15 días, mensual). Nunca negativo. Se redondea a centavos al final (la diferencia sin redondear). Descartado: art. 174 RLISR (opcional para la empresa); se menciona en una nota.
+**I1 (VoBo 2026-09-30, Q1) · Método art. 96 incremental.** ISR estimado = ISR(sueldo del periodo + parte gravada total) − ISR(sueldo del periodo), cada uno con la tarifa 2026 de la periodicidad (Anexo 8 RMF 2026: semanal 7 días, quincenal 15 días, mensual). Nunca negativo. El sueldo del periodo y las dos bases se redondean a centavos antes de aplicar la tarifa (diferencias de ≤ $0.01 frente a no redondearlos); el ISR de cada base queda sin redondear y la diferencia se redondea a centavos al final. Descartado: art. 174 RLISR (opcional para la empresa); se menciona en una nota.
 
 **I2 (Q2) · Sueldo del periodo.** Salario diario × 7 / 15 / 30.4. En el finiquito, el sueldo pendiente se suma completo a la parte gravada: se supone que todo el finiquito se paga junto con un periodo ordinario.
 
@@ -46,7 +46,8 @@ calcularIsrPeriodo(base, periodicidad) → { base, renglon: { limiteInferior, cu
 // calcularFiniquito(...) y calcularAguinaldo({ ..., periodicidad = 'quincenal' }) agregan, cuando valido:
 isr: {
   periodicidad, sueldoPeriodo,
-  conceptos: { <concepto>: { exento, gravado } },   // finiquito: sueldoPendiente, vacaciones, primaVacacional, aguinaldo; aguinaldo: aguinaldo
+  conceptos: { <concepto>: { monto, exento, gravado, topeExento, topeUma } },   // finiquito: sueldoPendiente, vacaciones, primaVacacional, aguinaldo; aguinaldo: aguinaldo
+                                                                                // topeExento/topeUma: aguinaldo 3,519.30/30; prima 1,759.65/15; null si grava completo
   exentoTotal, gravadoTotal,
   ordinario: { base, renglon, isr },   // ISR(sueldo del periodo)
   conExtra:  { base, renglon, isr },   // ISR(sueldo del periodo + gravado)

@@ -56,14 +56,19 @@ const TARIFAS_ISR_2026 = Object.freeze({
   ],
 });
 
-/** Topes anuales de exención (art. 93 fr. XIV LISR): aguinaldo 30 UMA, prima vacacional 15 UMA. */
-export const TOPES_EXENCION_2026 = Object.freeze({
-  aguinaldo: Math.round(30 * UMA_2026 * 100) / 100, // 3,519.30
-  primaVacacional: Math.round(15 * UMA_2026 * 100) / 100, // 1,759.65
-});
+/** Topes anuales de exención en UMA diarias (art. 93 fr. XIV LISR). Los conceptos sin tope gravan completo. */
+const EXENCION_UMA_2026 = Object.freeze({ aguinaldo: 30, primaVacacional: 15 });
+
+/** Topes anuales de exención en pesos: aguinaldo $3,519.30, prima vacacional $1,759.65. */
+export const TOPES_EXENCION_2026 = Object.freeze(Object.fromEntries(
+  Object.entries(EXENCION_UMA_2026).map(([concepto, umas]) => [concepto, Math.round(umas * UMA_2026 * 100) / 100]),
+));
 
 /** Días del sueldo del periodo por periodicidad (Anexo 8: 7 y 15 días; mensual = 30.4). */
 export const DIAS_PERIODO_ISR = Object.freeze({ semanal: 7, quincenal: 15, mensual: 30.4 });
+
+/** Periodicidades de nómina válidas: las que tienen tarifa ISR. Única fuente para validar. */
+export const PERIODICIDADES = Object.freeze(Object.keys(TARIFAS_ISR_2026));
 
 // ==== Fin de cifras fiscales 2026 ====
 
@@ -118,8 +123,6 @@ const formatoDias = (x) => x.toFixed(2);
 const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
 
 const esNumero = (x) => typeof x === 'number' && Number.isFinite(x);
-
-const PERIODICIDADES = ['semanal', 'quincenal', 'mensual'];
 
 /** 'YYYY-MM-DD' → número de día, o null si no es una fecha real. */
 function leerFecha(texto) {
@@ -220,19 +223,23 @@ export function anioDeServicio(fechaAntiguedad, fechaBaja) {
 }
 
 /**
- * ISR estimado de pagos extraordinarios (spec ISR, I1–I4, I7). `montos`: { concepto: monto redondeado };
- * `topes`: { concepto: tope de exención } (sin tope → grava completo).
+ * ISR estimado de pagos extraordinarios (spec ISR, I1–I4, I7). `montos`: { concepto: monto redondeado }.
+ * Tope de exención por concepto: TOPES_EXENCION_2026 (sin tope → grava completo; topeExento y topeUma null).
  * ISR = ISR(sueldo del periodo + gravado) − ISR(sueldo del periodo), nunca negativo, a centavos al final.
+ * El sueldo del periodo y las dos bases se redondean a centavos antes de aplicar la tarifa
+ * (diferencia de ≤ $0.01 frente a no redondearlos).
  * Salario diario ≤ mínimo general → `salarioMinimo: true` e ISR 0.
  */
-function estimarIsr(salarioDiario, periodicidad, montos, topes) {
+function estimarIsr(salarioDiario, periodicidad, montos) {
   const conceptos = {};
   let exentoTotal = 0;
   let gravadoTotal = 0;
   for (const [nombre, monto] of Object.entries(montos)) {
-    const exento = Math.min(monto, topes[nombre] ?? 0);
+    const topeExento = TOPES_EXENCION_2026[nombre] ?? null;
+    const topeUma = EXENCION_UMA_2026[nombre] ?? null;
+    const exento = Math.min(monto, topeExento ?? 0);
     const gravado = redondear(monto - exento);
-    conceptos[nombre] = { exento, gravado };
+    conceptos[nombre] = { monto, exento, gravado, topeExento, topeUma };
     exentoTotal += exento;
     gravadoTotal += gravado;
   }
@@ -371,7 +378,7 @@ export function calcularFiniquito({
     vacaciones: conceptos.vacaciones.monto,
     primaVacacional: conceptos.primaVacacional.monto,
     aguinaldo: conceptos.aguinaldo.monto,
-  }, TOPES_EXENCION_2026);
+  });
 
   return { valido: true, errores, avisos, conceptos, total, isr, neto: redondear(total - isr.isr) };
 }
@@ -412,6 +419,6 @@ export function calcularAguinaldo({
   if (errores.length > 0) return { valido: false, errores, avisos, aguinaldo: null, isr: null, neto: null };
 
   const aguinaldo = aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario);
-  const isr = estimarIsr(salarioDiario, periodicidad, { aguinaldo: aguinaldo.monto }, TOPES_EXENCION_2026);
+  const isr = estimarIsr(salarioDiario, periodicidad, { aguinaldo: aguinaldo.monto });
   return { valido: true, errores, avisos, aguinaldo, isr, neto: redondear(aguinaldo.monto - isr.isr) };
 }

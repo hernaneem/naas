@@ -1,6 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { calcularIsrPeriodo, calcularAguinaldo, calcularFiniquito } from '../js/calculos-laborales.js';
+import {
+  calcularIsrPeriodo, calcularAguinaldo, calcularFiniquito, PERIODICIDADES, DIAS_PERIODO_ISR,
+} from '../js/calculos-laborales.js';
 
 // Spec: docs/specs/2026-09-30-isr-neto-calculadoras.md (I1–I8)
 // Cifras: docs/research/2026-09-30-isr-finiquito-aguinaldo.md (Anexo 8 RMF 2026, UMA 2026)
@@ -80,6 +82,17 @@ describe('calcularIsrPeriodo: periodicidad desconocida', () => {
 
 const baseAguinaldo = { salarioDiario: 500, fechaAntiguedad: '2020-03-01', fechaCorte: '2026-12-31' };
 
+describe('periodicidades: una sola fuente', () => {
+  test('las periodicidades válidas son exactamente las que tienen tarifa y días del periodo', () => {
+    assert.deepEqual([...PERIODICIDADES].sort(), ['mensual', 'quincenal', 'semanal']);
+    assert.deepEqual(Object.keys(DIAS_PERIODO_ISR).sort(), [...PERIODICIDADES].sort());
+    for (const periodicidad of PERIODICIDADES) {
+      assert.doesNotThrow(() => calcularIsrPeriodo(1000, periodicidad));
+      assert.equal(calcularAguinaldo({ ...baseAguinaldo, periodicidad }).valido, true);
+    }
+  });
+});
+
 describe('calcularAguinaldo con ISR: criterios de aceptación', () => {
   test('criterio 1: año completo, mensual → exento 3,519.30, gravado 3,980.70, ISR 769.99, neto 6,730.01', () => {
     const r = calcularAguinaldo({ ...baseAguinaldo, periodicidad: 'mensual' });
@@ -88,7 +101,7 @@ describe('calcularAguinaldo con ISR: criterios de aceptación', () => {
     const i = r.isr;
     assert.equal(i.periodicidad, 'mensual');
     assert.equal(i.sueldoPeriodo, 15200);
-    assert.deepEqual(i.conceptos, { aguinaldo: { exento: 3519.30, gravado: 3980.70 } });
+    assert.deepEqual(i.conceptos, { aguinaldo: { monto: 7500, exento: 3519.30, gravado: 3980.70, topeExento: 3519.30, topeUma: 30 } });
     assert.equal(i.exentoTotal, 3519.30);
     assert.equal(i.gravadoTotal, 3980.70);
     assert.equal(i.ordinario.base, 15200);
@@ -107,7 +120,7 @@ describe('calcularAguinaldo con ISR: criterios de aceptación', () => {
     const i = r.isr;
     assert.equal(i.periodicidad, 'quincenal');
     assert.equal(i.sueldoPeriodo, 7500);
-    assert.deepEqual(i.conceptos, { aguinaldo: { exento: 3519.30, gravado: 3980.70 } });
+    assert.deepEqual(i.conceptos, { aguinaldo: { monto: 7500, exento: 3519.30, gravado: 3980.70, topeExento: 3519.30, topeUma: 30 } });
     assert.equal(i.ordinario.base, 7500);
     assert.deepEqual(i.ordinario.renglon, { limiteInferior: 7225.96, cuotaFija: 660.75, porcentaje: 17.92 });
     assert.equal(aCentavos(i.ordinario.isr), 709.86);
@@ -159,7 +172,7 @@ describe('calcularAguinaldo: exenciones y casos límite (I4)', () => {
   test('aguinaldo por debajo del tope: exento completo, ISR 0, neto = bruto', () => {
     // corte 2026-03-31: 90 días → $1,849.32 < $3,519.30
     const r = calcularAguinaldo({ ...baseAguinaldo, fechaAntiguedad: '2015-08-20', fechaCorte: '2026-03-31' });
-    assert.deepEqual(r.isr.conceptos, { aguinaldo: { exento: 1849.32, gravado: 0 } });
+    assert.deepEqual(r.isr.conceptos, { aguinaldo: { monto: 1849.32, exento: 1849.32, gravado: 0, topeExento: 3519.30, topeUma: 30 } });
     assert.equal(r.isr.exentoTotal, 1849.32);
     assert.equal(r.isr.gravadoTotal, 0);
     assert.equal(r.isr.conExtra.base, r.isr.ordinario.base);
@@ -171,12 +184,12 @@ describe('calcularAguinaldo: exenciones y casos límite (I4)', () => {
     // 15 × 365/365 × 234.62 = 3,519.30
     const r = calcularAguinaldo({ ...baseAguinaldo, salarioDiario: 234.62 });
     assert.equal(r.aguinaldo.monto, 3519.30);
-    assert.deepEqual(r.isr.conceptos.aguinaldo, { exento: 3519.30, gravado: 0 });
+    assert.deepEqual(r.isr.conceptos.aguinaldo, { monto: 3519.30, exento: 3519.30, gravado: 0, topeExento: 3519.30, topeUma: 30 });
   });
 
   test('prestaciones superiores (30 días): $15,000 → exento 3,519.30, gravado 11,480.70', () => {
     const r = calcularAguinaldo({ ...baseAguinaldo, diasAguinaldo: 30 });
-    assert.deepEqual(r.isr.conceptos, { aguinaldo: { exento: 3519.30, gravado: 11480.70 } });
+    assert.deepEqual(r.isr.conceptos, { aguinaldo: { monto: 15000, exento: 3519.30, gravado: 11480.70, topeExento: 3519.30, topeUma: 30 } });
     // quincenal: ISR(7,500) = 709.8580; ISR(18,980.70) = 2,795.25 + (18,980.70 − 17,448.76) × 23.52 % = 3,155.5623
     assert.equal(r.isr.conExtra.base, 18980.70);
     assert.equal(aCentavos(r.isr.conExtra.isr), 3155.56);
@@ -204,7 +217,7 @@ describe('calcularAguinaldo: salario mínimo (I7)', () => {
     const r = calcularAguinaldo({ ...baseAguinaldo, salarioDiario: 300 });
     assert.equal(r.aguinaldo.monto, 4500);
     assert.equal(r.isr.salarioMinimo, true);
-    assert.deepEqual(r.isr.conceptos, { aguinaldo: { exento: 3519.30, gravado: 980.70 } });
+    assert.deepEqual(r.isr.conceptos, { aguinaldo: { monto: 4500, exento: 3519.30, gravado: 980.70, topeExento: 3519.30, topeUma: 30 } });
     assert.equal(r.isr.sueldoPeriodo, 4500);
     assert.equal(r.isr.ordinario.base, 4500);
     assert.equal(r.isr.conExtra.base, 5480.70);
@@ -233,10 +246,10 @@ describe('calcularFiniquito con ISR: criterio 3', () => {
     assert.equal(i.periodicidad, 'quincenal');
     assert.equal(i.sueldoPeriodo, 7500);
     assert.deepEqual(i.conceptos, {
-      sueldoPendiente: { exento: 0, gravado: 7000 },
-      vacaciones: { exento: 0, gravado: 3134.25 },
-      primaVacacional: { exento: 783.56, gravado: 0 },
-      aguinaldo: { exento: 3519.30, gravado: 2069.74 },
+      sueldoPendiente: { monto: 7000, exento: 0, gravado: 7000, topeExento: null, topeUma: null },
+      vacaciones: { monto: 3134.25, exento: 0, gravado: 3134.25, topeExento: null, topeUma: null },
+      primaVacacional: { monto: 783.56, exento: 783.56, gravado: 0, topeExento: 1759.65, topeUma: 15 },
+      aguinaldo: { monto: 5589.04, exento: 3519.30, gravado: 2069.74, topeExento: 3519.30, topeUma: 30 },
     });
     assert.equal(i.exentoTotal, 4302.86);
     assert.equal(i.gravadoTotal, 12203.99);
@@ -257,8 +270,8 @@ describe('calcularFiniquito con ISR: exenciones, salario mínimo y errores', () 
     // 20 días pendientes: vacaciones 26.2685 días → $13,134.25; prima 25 % → $3,283.56
     const r = calcularFiniquito({ ...baseFiniquito, vacacionesPendientes: 20 });
     assert.equal(r.conceptos.primaVacacional.monto, 3283.56);
-    assert.deepEqual(r.isr.conceptos.primaVacacional, { exento: 1759.65, gravado: 1523.91 });
-    assert.deepEqual(r.isr.conceptos.vacaciones, { exento: 0, gravado: 13134.25 });
+    assert.deepEqual(r.isr.conceptos.primaVacacional, { monto: 3283.56, exento: 1759.65, gravado: 1523.91, topeExento: 1759.65, topeUma: 15 });
+    assert.deepEqual(r.isr.conceptos.vacaciones, { monto: 13134.25, exento: 0, gravado: 13134.25, topeExento: null, topeUma: null });
     assert.equal(r.isr.exentoTotal, 5278.95); // 1,759.65 + 3,519.30
     assert.equal(r.isr.gravadoTotal, 23727.90); // 7,000 + 13,134.25 + 1,523.91 + 2,069.74
     assert.equal(r.isr.conExtra.base, 31227.90);
