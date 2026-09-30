@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   calcularFiniquito,
   diasVacacionesLey,
+  anioDeServicio,
   SALARIO_MINIMO_2026,
   MINIMOS_LEY,
 } from '../js/calculos-laborales.js';
@@ -27,6 +28,31 @@ const base = {
   fechaBaja: '2026-09-29',
   periodicidad: 'quincenal',
 };
+
+describe('anioDeServicio (año de servicio en curso)', () => {
+  const casos = [
+    ['2024-05-10', '2026-09-29', 3, 'caso del criterio de aceptación 1'],
+    ['2024-05-10', '2026-05-10', 3, 'baja el día del aniversario'],
+    ['2024-05-10', '2026-05-09', 2, 'baja el día anterior al aniversario'],
+    ['2026-09-29', '2026-09-29', 1, 'baja el mismo día de la fecha de antigüedad'],
+    ['2024-02-29', '2025-02-28', 2, 'antigüedad 29 feb, aniversario en año no bisiesto'],
+  ];
+  for (const [antiguedad, baja, anio, desc] of casos) {
+    test(desc, () => assert.equal(anioDeServicio(antiguedad, baja), anio));
+  }
+
+  test('coincide con el año de servicio de calcularFiniquito', () => {
+    const r = calcularFiniquito({ ...base, fechaAntiguedad: '2020-01-15', fechaBaja: '2026-01-20' });
+    assert.equal(anioDeServicio('2020-01-15', '2026-01-20'), r.conceptos.vacaciones.anioServicio);
+  });
+
+  test('null si alguna fecha no es válida o la baja es anterior a la antigüedad', () => {
+    assert.equal(anioDeServicio('', '2026-09-29'), null);
+    assert.equal(anioDeServicio('2026-02-30', '2026-09-29'), null);
+    assert.equal(anioDeServicio('2024-05-10', undefined), null);
+    assert.equal(anioDeServicio('2026-09-29', '2026-09-28'), null);
+  });
+});
 
 describe('criterio de aceptación 1 (caso completo, ley)', () => {
   const r = calcularFiniquito(base);

@@ -59,7 +59,7 @@ Días pendientes = días calendario después de la fecha pagada hasta la baja (i
 
 **D6 (VoBo Hernán 2026-09-29) · Motor puro + página estática.** Un módulo de cálculo sin DOM (ES module) que recibe una entrada y devuelve el resultado completo (conceptos, total, errores, avisos y datos para explicar la fórmula); una página HTML con su JS de interfaz que solo lee el formulario, llama al motor y pinta. El mismo motor se reutilizará en la calculadora de aguinaldo (ola 2). Sin build ni framework: el sitio sigue siendo estático en GitHub Pages. Descartado: JS inline en un solo HTML (lógica de dinero sin pruebas y duplicada en la ola 2) y React/Vite (rompe el sitio estático).
 
-**D7 · Sueldo mensual.** Salario diario = mensual ÷ 30.
+**D7 · Sueldo mensual.** Salario diario = mensual ÷ 30, redondeado a centavos (como aparece en un recibo) antes de calcular.
 
 **D8 · Redondeo.** Los cálculos usan días sin redondear; cada monto de concepto se redondea a centavos y el total es la suma de los montos redondeados. Los días se muestran con 2 decimales.
 
@@ -67,7 +67,7 @@ Días pendientes = días calendario después de la fecha pagada hasta la baja (i
 
 **D10 · Ubicación.** No va en el menú principal: columna "Herramientas" en el footer de todas las páginas. CTA final a la demo (`cal.com/hernaneem/reunion-naas`). Sin analytics ni captura de datos.
 
-**D11 · Ingreso dentro del último periodo.** Si el periodo que se supone pagado empieza antes de la fecha de antigüedad, se considera pagado hasta el día anterior a la antigüedad: nunca se cobra ni descuenta un periodo previo al ingreso.
+**D11 · Ingreso dentro del último periodo.** El sueldo pendiente nunca cuenta días anteriores a la fecha de antigüedad: si la fecha supuesta de pago (D1) es anterior al ingreso, los días pendientes van desde la fecha de antigüedad. Si el pago supuesto ya cubre la baja, son 0 aunque la persona haya entrado a mitad del periodo (ese pago incluye lo que trabajó). En pantalla, en ese caso no se muestra una fecha de pago anterior al ingreso sino "se cuentan desde tu fecha de antigüedad".
 
 **D12 · Aviso de salario mínimo.** Como no se captura zona, solo avisa por debajo del mínimo general; el mensaje menciona también el de la frontera norte.
 
@@ -95,11 +95,11 @@ calcularFiniquito({
 }
 ```
 
-Además exporta `diasVacacionesLey(anioServicio)`, `SALARIO_MINIMO_2026` y `MINIMOS_LEY`. Las fechas se manejan como días calendario (sin horas ni zona horaria).
+Además exporta `diasVacacionesLey(anioServicio)`, `anioDeServicio(fechaAntiguedad, fechaBaja)` (año de servicio en curso, o `null` si alguna fecha no es válida o la baja es anterior a la antigüedad; la interfaz lo usa para precargar los días de vacaciones de ley), `SALARIO_MINIMO_2026` y `MINIMOS_LEY`. Las fechas se manejan como días calendario (sin horas ni zona horaria).
 
 ## Testing
 
-Seam único: la función pública del motor (`calcularFiniquito` y `diasVacacionesLey`) probada con `node --test`, sin dependencias. Casos: tabla de vacaciones en cada escalón, aniversarios (incluido 29 de feb), baja el día del aniversario y el día anterior, ingreso en el año de la baja, año bisiesto con baja el 31 de dic, los tres cortes de periodicidad (cada día de la semana, días 14/15/16/fin de mes, mensual último día), prestaciones superiores, validaciones y avisos, redondeo del total. La interfaz se verifica en navegador (Playwright) sin pruebas automatizadas propias. No hay pruebas previas en el repo que imitar.
+Seam único: la función pública del motor (`calcularFiniquito`, `diasVacacionesLey` y `anioDeServicio`) probada con `node --test`, sin dependencias. Casos: tabla de vacaciones en cada escalón, aniversarios (incluido 29 de feb), baja el día del aniversario y el día anterior, ingreso en el año de la baja, año bisiesto con baja el 31 de dic, los tres cortes de periodicidad (cada día de la semana, días 14/15/16/fin de mes, mensual último día), prestaciones superiores, validaciones y avisos, redondeo del total. La interfaz se verifica en navegador (Playwright) sin pruebas automatizadas propias. No hay pruebas previas en el repo que imitar.
 
 ## Producción
 

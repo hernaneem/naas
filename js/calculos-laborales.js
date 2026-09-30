@@ -82,6 +82,17 @@ function ultimoAniversarioYAnios(antiguedad, baja) {
   return { anios, ultimoAniversario: aniversario(a.anio + anios) };
 }
 
+/**
+ * Año de servicio en curso (1, 2, 3…) entre la fecha de antigüedad y la de baja ('YYYY-MM-DD').
+ * null si alguna fecha no es válida o la baja es anterior a la antigüedad.
+ */
+export function anioDeServicio(fechaAntiguedad, fechaBaja) {
+  const antiguedad = leerFecha(fechaAntiguedad);
+  const baja = leerFecha(fechaBaja);
+  if (antiguedad === null || baja === null || baja < antiguedad) return null;
+  return ultimoAniversarioYAnios(antiguedad, baja).anios + 1;
+}
+
 export function calcularFiniquito({
   salarioDiario,
   fechaAntiguedad,
@@ -151,7 +162,7 @@ export function calcularFiniquito({
   const diasAguinaldo = prestaciones ? prestaciones.diasAguinaldo : MINIMOS_LEY.diasAguinaldo;
 
   // Sueldo pendiente (D1)
-  // Si el periodo supuesto empezó antes del ingreso, aún no se le había pagado nada.
+  // D11: si el pago supuesto es anterior a la fecha de antigüedad, los días se cuentan desde esa fecha.
   const pagadoHasta = Math.max(calcularPagadoHasta(baja, periodicidad), antiguedad - 1);
   const diasPendientesSueldo = Math.max(0, baja - pagadoHasta);
 
