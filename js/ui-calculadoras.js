@@ -12,11 +12,12 @@
 //   Barra fija en móvil: #barraTotal y #barraTotalMonto.
 //
 // Caché entre deploys: los módulos se cargan con ?v=AAAAMMDD en los <script type="module">, en el
-// <link> de calculadora.css y en TODOS los imports relativos entre módulos. Al cambiar cualquier módulo
+// <link> de calculadora.css y en TODOS los imports relativos entre módulos; si hay varios deploys el
+// mismo día se agrega una letra (?v=20260930b, ?v=20260930c…). Al cambiar cualquier módulo
 // (o calculadora.css), sube la versión en todos esos lugares a la vez para que nunca se mezclen
 // un módulo nuevo y uno viejo en caché.
 
-import { UMA_2026, SALARIO_MINIMO_2026, DIAS_PERIODO_ISR } from './calculos-laborales.js?v=20260930b';
+import { UMA_2026, SALARIO_MINIMO_2026, DIAS_PERIODO_ISR, redondear } from './calculos-laborales.js?v=20260930c';
 
 export const $ = (id) => document.getElementById(id);
 
@@ -29,6 +30,9 @@ const hastaDosDecimales = new Intl.NumberFormat('es-MX', { maximumFractionDigits
 export const fmtMonto = (x) => moneda.format(x);
 export const fmtDias = (x) => dosDecimales.format(x);
 export const fmtNum = (x) => hastaDosDecimales.format(x);
+
+/** 'quincenal' → 'Quincenal'. */
+export const fmtPeriodicidad = (periodicidad) => periodicidad.charAt(0).toUpperCase() + periodicidad.slice(1);
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
   'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -78,9 +82,12 @@ export function el(tag, opciones = {}, hijos = []) {
 
 export const icono = (nombre) => el('i', { clase: `bx ${nombre}`, attrs: { 'aria-hidden': 'true' } });
 
-/** Fila del desglose: nombre, detalle en gris y un valor ya formateado a la derecha. */
-export function filaValor(nombre, detalle, valor) {
-  return el('li', { clase: 'calc-line' }, [
+/**
+ * Fila del desglose: nombre, detalle en gris y un valor ya formateado a la derecha.
+ * `variante`: clase extra opcional (filas de cierre).
+ */
+export function filaValor(nombre, detalle, valor, variante = '') {
+  return el('li', { clase: `calc-line ${variante}`.trim() }, [
     el('span', { clase: 'calc-line-name' }, [
       el('span', { texto: nombre }),
       el('span', { clase: 'calc-line-detail', texto: detalle }),
@@ -91,6 +98,18 @@ export function filaValor(nombre, detalle, valor) {
 
 /** Fila del desglose con un monto en pesos. */
 export const filaConcepto = (nombre, detalle, monto) => filaValor(nombre, detalle, fmtMonto(monto));
+
+/**
+ * Filas de cierre del desglose: bruto, menos ISR estimado y neto estimado, para que la suma cuadre con
+ * el número grande. `nombreBruto`/`detalleBruto`: cómo se llama el bruto en cada calculadora.
+ */
+export function filasCierre({ nombreBruto, detalleBruto, bruto, isr, neto }) {
+  return [
+    filaValor(nombreBruto, detalleBruto, fmtMonto(bruto), 'calc-line-subtotal'),
+    filaValor('ISR estimado', `Tarifa ${isr.periodicidad} 2026`, `−${fmtMonto(isr.isr)}`, 'calc-line-resta'),
+    filaValor('Neto estimado', 'Lo que recibirías, después de ISR', fmtMonto(neto), 'calc-line-neto'),
+  ];
+}
 
 /** Nota bajo el resultado: 'info' o 'aviso'. */
 export function nota(tipo, texto) {
@@ -127,7 +146,6 @@ export function lineasAguinaldo(aguinaldo, salarioDiario, deEmpresa) {
 
 // ---- ISR estimado y neto (spec ISR, I6–I7) ----
 
-const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
 const fmtPorcentaje = (x) => `${dosDecimales.format(x)} %`;
 
 /**
@@ -164,11 +182,12 @@ function lineasBase(etiqueta, calculo) {
 
 /**
  * Bloque "ISR estimado" de "¿Cómo se calculó?", igual en las dos calculadoras.
- * `isr`: salida del motor; `montos`: { concepto: monto bruto }; `nombres`: { concepto: etiqueta };
- * `topes`: { concepto: tope de exención } para los conceptos con parte exenta.
+ * `resultado`: salida del motor (usa `isr` y `neto`); `bruto`: total bruto; `nombres`: { concepto: etiqueta }.
+ * Los topes de exención y qué concepto grava completo vienen del motor (isr.conceptos).
  * Devuelve un nodo con el título del bloque y sus pasos.
  */
-export function bloqueIsr({ isr, salarioDiario, bruto, neto, montos, nombres, topes }) {
+export function bloqueIsr(resultado, { bruto, salarioDiario, nombres }) {
+  const { isr, neto } = resultado;
   const pasos = [];
   const tarifa = `tarifa ${isr.periodicidad} 2026`;
 
@@ -180,10 +199,11 @@ export function bloqueIsr({ isr, salarioDiario, bruto, neto, montos, nombres, to
     ], 'h5'));
   } else {
     // Parte exenta y parte gravada por concepto (I4).
-    const conTope = Object.keys(montos).filter((c) => topes[c] !== undefined);
-    const sinTope = Object.keys(montos).filter((c) => topes[c] === undefined);
-    const topesTexto = conTope.map((c) =>
-      `${nombres[c].toLowerCase()} hasta ${fmtNum(Math.round(topes[c] / UMA_2026))} UMA (${fmtMonto(topes[c])})`);
+    const conceptos = Object.entries(isr.conceptos);
+    const conTope = conceptos.filter(([, c]) => c.topeExento !== null);
+    const sinTope = conceptos.filter(([, c]) => c.topeExento === null).map(([clave]) => clave);
+    const topesTexto = conTope.map(([clave, c]) =>
+      `${nombres[clave].toLowerCase()} hasta ${fmtNum(c.topeUma)} UMA (${fmtMonto(c.topeExento)})`);
     const intro = [`Parte exenta de ISR: ${topesTexto.join(' y ')} al año (UMA 2026: ${fmtMonto(UMA_2026)} diarios).`];
     if (sinTope.length > 0) {
       const lista = sinTope.map((c, i) => (i === 0 ? nombres[c] : nombres[c].toLowerCase())).join(' y ');
@@ -191,17 +211,28 @@ export function bloqueIsr({ isr, salarioDiario, bruto, neto, montos, nombres, to
     }
     intro.push('Suponemos que este año no has usado esa exención.');
     const lineasExencion = [['t', intro.join(' ')]];
-    for (const [concepto, monto] of Object.entries(montos)) {
-      const { exento, gravado } = isr.conceptos[concepto];
+    for (const [clave, { monto, exento, gravado, topeExento }] of conceptos) {
       let texto;
-      if (topes[concepto] === undefined) texto = `${nombres[concepto]}: ${fmtMonto(monto)} gravado completo`;
-      else if (gravado === 0) texto = `${nombres[concepto]}: ${fmtMonto(monto)} exento completo`;
-      else texto = `${nombres[concepto]}: ${fmtMonto(monto)} = ${fmtMonto(exento)} exento + ${fmtMonto(gravado)} gravado`;
+      if (topeExento === null) texto = `${nombres[clave]}: ${fmtMonto(monto)} gravado completo`;
+      else if (gravado === 0) texto = `${nombres[clave]}: ${fmtMonto(monto)} exento completo`;
+      else texto = `${nombres[clave]}: ${fmtMonto(monto)} = ${fmtMonto(exento)} exento + ${fmtMonto(gravado)} gravado`;
       lineasExencion.push(['f', texto]);
     }
-    const gravados = Object.keys(montos).map((c) => isr.conceptos[c].gravado);
-    if (gravados.length > 1) {
-      lineasExencion.push(['f', `Parte gravada total: ${gravados.map(fmtMonto).join(' + ')} = ${fmtMonto(isr.gravadoTotal)}`]);
+    // La suma de la parte gravada omite los conceptos sin parte gravada (exentos completos).
+    const conGravado = conceptos.filter(([, c]) => c.gravado > 0);
+    const sinGravado = conceptos.filter(([, c]) => c.gravado === 0).map(([clave]) => clave);
+    if (conceptos.length > 1 && conGravado.length > 0) {
+      const suma = conGravado.length > 1
+        ? `${conGravado.map(([, c]) => fmtMonto(c.gravado)).join(' + ')} = ${fmtMonto(isr.gravadoTotal)}`
+        : fmtMonto(isr.gravadoTotal);
+      let exentos = '';
+      if (sinGravado.length > 0) {
+        const lista = sinGravado.map((c) => nombres[c].toLowerCase()).join(' ni ');
+        exentos = sinGravado.length > 1
+          ? ` (no se suman ${lista}: sus montos están exentos completos)`
+          : ` (no se suma ${lista}: su monto está exento completo)`;
+      }
+      lineasExencion.push(['f', `Parte gravada total: ${suma}${exentos}`]);
     }
     pasos.push(paso('Parte exenta y parte gravada', lineasExencion, 'h5'));
 
@@ -267,7 +298,7 @@ export function leerSueldo(form) {
   const tipo = valorRadio(form, 'tipoSueldo');
   const capturado = leerNumero($('sueldo').value);
   if (tipo === 'mensual') {
-    const diario = Number.isFinite(capturado) ? Math.round((capturado / 30) * 100) / 100 : NaN;
+    const diario = Number.isFinite(capturado) ? redondear(capturado / 30) : NaN;
     return { tipo, capturado, diario };
   }
   return { tipo, capturado, diario: capturado };

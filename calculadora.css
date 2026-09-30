@@ -664,6 +664,37 @@
     white-space: nowrap;
 }
 
+/* Filas de cierre: bruto − ISR estimado = neto estimado (cuadran con el número grande). */
+.calc-line:has(+ .calc-line-subtotal) {
+    border-bottom: 0;
+}
+
+.calc-line-subtotal {
+    border-top: 1px solid var(--text-muted);
+}
+
+.calc-line-subtotal .calc-line-name,
+.calc-line-resta .calc-line-name {
+    font-weight: 500;
+}
+
+.calc-line-resta .calc-line-amount {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.calc-line-neto {
+    margin: 0.5rem -0.75rem 0;
+    padding: 0.8rem 0.75rem;
+    border-bottom: 0;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+}
+
+.calc-line-neto .calc-line-amount {
+    font-size: 1.1rem;
+}
+
 .calc-notes {
     display: grid;
     gap: 0.5rem;
@@ -1205,6 +1236,12 @@
         padding: 5pt 0;
         border-bottom-color: #bbb;
         break-inside: avoid;
+    }
+
+    .calc-line-neto {
+        margin: 0;
+        padding: 5pt 0;
+        background: none;
     }
 
     .calc-line-detail,

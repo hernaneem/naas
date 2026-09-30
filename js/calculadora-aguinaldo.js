@@ -2,12 +2,12 @@
 // Toda la lógica de dinero vive en calculos-laborales.js; las piezas comunes de UI, en ui-calculadoras.js.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
 // Spec: docs/specs/2026-09-30-calculadora-aguinaldo.md
-import { calcularAguinaldo, MINIMOS_LEY, TOPES_EXENCION_2026 } from './calculos-laborales.js?v=20260930b';
+import { calcularAguinaldo, MINIMOS_LEY } from './calculos-laborales.js?v=20260930c';
 import {
-  $, fmtMonto, fmtDias, fmtNum, fmtFecha, hoyLocal, leerFechaIso, filaValor, nota, paso, lineasAguinaldo,
-  leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
+  $, fmtMonto, fmtDias, fmtNum, fmtFecha, fmtPeriodicidad, hoyLocal, leerFechaIso, filaValor, filasCierre, nota, paso,
+  lineasAguinaldo, leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
   pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion, pintarTotales, notaSalarioMinimo, bloqueIsr,
-} from './ui-calculadoras.js?v=20260930b';
+} from './ui-calculadoras.js?v=20260930c';
 
 const form = $('calcForm');
 const campos = {
@@ -76,15 +76,7 @@ function pintarComoSeCalculo(entrada, resultado) {
     paso('Días trabajados en el año', lineasDias),
     paso('Días de aguinaldo que te tocan', lineasProporcion),
     paso('Monto bruto', lineasMonto),
-    bloqueIsr({
-      isr: resultado.isr,
-      salarioDiario: entrada.salarioDiario,
-      bruto: aguinaldo.monto,
-      neto: resultado.neto,
-      montos: { aguinaldo: aguinaldo.monto },
-      nombres: { aguinaldo: 'Aguinaldo' },
-      topes: TOPES_EXENCION_2026,
-    }),
+    bloqueIsr(resultado, { bruto: aguinaldo.monto, salarioDiario: entrada.salarioDiario, nombres: { aguinaldo: 'Aguinaldo' } }),
   );
 }
 
@@ -96,7 +88,7 @@ function pintarDatos(entrada, sueldo) {
     ['Fecha de antigüedad', fmtFecha(entrada.fechaAntiguedad)],
     ['Calcular al', fmtFecha(entrada.fechaCorte)],
     ['Días de aguinaldo al año', fmtNum(entrada.diasAguinaldo)],
-    ['Periodicidad', entrada.periodicidad.charAt(0).toUpperCase() + entrada.periodicidad.slice(1)],
+    ['Periodicidad', fmtPeriodicidad(entrada.periodicidad)],
     ['Calculado el', fmtFecha(hoyLocal())],
   );
   pintarDatosCapturados(filas);
@@ -118,6 +110,10 @@ function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
       `${fmtDias(aguinaldo.dias)} días`),
     filaValor('Salario diario', sueldo.tipo === 'mensual' ? `Sueldo mensual de ${fmtMonto(sueldo.capturado)} ÷ 30` : 'Sueldo base bruto',
       fmtMonto(entrada.salarioDiario)),
+    ...filasCierre({
+      nombreBruto: 'Aguinaldo bruto', detalleBruto: `${fmtDias(aguinaldo.dias)} días × ${fmtMonto(entrada.salarioDiario)}`,
+      bruto: aguinaldo.monto, isr: resultado.isr, neto: resultado.neto,
+    }),
   );
 
   $('notas').replaceChildren(

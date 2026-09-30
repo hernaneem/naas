@@ -120,7 +120,8 @@ function ultimoDiaDelMes(anio, mes) {
 
 const formatoDias = (x) => x.toFixed(2);
 
-const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
+/** Redondeo a centavos del motor (también lo usa la interfaz para mostrar cifras intermedias). */
+export const redondear = (x) => Math.round((x + Number.EPSILON) * 100) / 100;
 
 const esNumero = (x) => typeof x === 'number' && Number.isFinite(x);
 

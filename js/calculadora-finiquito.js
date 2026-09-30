@@ -2,13 +2,13 @@
 // Toda la lógica de dinero vive en calculos-laborales.js; las piezas comunes de UI, en ui-calculadoras.js.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
 import {
-  anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY, TOPES_EXENCION_2026,
-} from './calculos-laborales.js?v=20260930b';
+  anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY,
+} from './calculos-laborales.js?v=20260930c';
 import {
-  $, fmtMonto, fmtDias, fmtNum, fmtFecha, sumarDias, hoyLocal, filaConcepto, nota, paso, lineasAguinaldo,
-  leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
+  $, fmtMonto, fmtDias, fmtNum, fmtFecha, fmtPeriodicidad, sumarDias, hoyLocal, filaConcepto, filasCierre, nota, paso,
+  lineasAguinaldo, leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
   pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion, pintarTotales, notaSalarioMinimo, bloqueIsr,
-} from './ui-calculadoras.js?v=20260930b';
+} from './ui-calculadoras.js?v=20260930c';
 
 const NOMBRES_ISR = {
   sueldoPendiente: 'Sueldo pendiente',
@@ -185,15 +185,7 @@ function pintarComoSeCalculo(entrada, resultado) {
     paso('Prima vacacional', lineasPrima),
     paso('Aguinaldo proporcional', lineasAguinaldoFiniquito),
     paso('Total bruto', lineasTotal),
-    bloqueIsr({
-      isr: resultado.isr,
-      salarioDiario: entrada.salarioDiario,
-      bruto: resultado.total,
-      neto: resultado.neto,
-      montos: Object.fromEntries(Object.keys(NOMBRES_ISR).map((c) => [c, resultado.conceptos[c].monto])),
-      nombres: NOMBRES_ISR,
-      topes: TOPES_EXENCION_2026,
-    }),
+    bloqueIsr(resultado, { bruto: resultado.total, salarioDiario: entrada.salarioDiario, nombres: NOMBRES_ISR }),
   );
 }
 
@@ -204,7 +196,7 @@ function pintarDatos(entrada, sueldo) {
     ['Salario diario', fmtMonto(entrada.salarioDiario)],
     ['Fecha de antigüedad', fmtFecha(entrada.fechaAntiguedad)],
     ['Fecha de baja', fmtFecha(entrada.fechaBaja)],
-    ['Periodicidad', entrada.periodicidad.charAt(0).toUpperCase() + entrada.periodicidad.slice(1)],
+    ['Periodicidad', fmtPeriodicidad(entrada.periodicidad)],
     ['Vacaciones ya tomadas en tu año actual', `${fmtDias(entrada.vacacionesTomadas)} días`],
     ['Vacaciones pendientes de años anteriores', `${fmtDias(entrada.vacacionesPendientes)} días`],
   );
@@ -235,6 +227,10 @@ function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
     filaConcepto('Vacaciones', detalleVac, vacaciones.monto),
     filaConcepto('Prima vacacional', `${fmtNum(primaVacacional.porcentaje)} % sobre ${fmtDias(primaVacacional.dias)} días`, primaVacacional.monto),
     filaConcepto('Aguinaldo proporcional', `${fmtDias(aguinaldo.dias)} días`, aguinaldo.monto),
+    ...filasCierre({
+      nombreBruto: 'Total bruto', detalleBruto: 'Suma de los cuatro conceptos',
+      bruto: resultado.total, isr: resultado.isr, neto: resultado.neto,
+    }),
   );
 
   const notas = [nota('info', textoPagadoHasta(sueldoPendiente.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja))];
