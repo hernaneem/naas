@@ -55,3 +55,21 @@ _Avoid_: prestaciones de ley (que es el mínimo)
 
 **Monto estimado**:
 Todo resultado de las calculadoras: bruto, antes de ISR y sin carácter de asesoría legal.
+
+### ISR de las calculadoras
+
+**ISR estimado**:
+Retención aproximada de ISR sobre lo que paga la calculadora, con la tarifa del periodo de la persona (art. 96 LISR). Sin subsidio para el empleo.
+_Avoid_: impuesto, retención real
+
+**Neto estimado**:
+Monto estimado menos ISR estimado: lo que la persona recibiría. No descuenta IMSS, INFONAVIT ni otras deducciones.
+
+**Parte exenta**:
+Porción de un concepto que no paga ISR por ley (aguinaldo hasta 30 UMA diarias al año; prima vacacional hasta 15 UMA diarias al año).
+
+**Parte gravada**:
+Porción de un concepto que sí paga ISR. Sueldo pendiente y vacaciones gravan completos.
+
+**Sueldo del periodo**:
+Salario diario × días del periodo de nómina (7 semanal, 15 quincenal, 30.4 mensual). Es la base ordinaria contra la que se mide el ISR de lo extraordinario.
