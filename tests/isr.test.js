@@ -220,3 +220,75 @@ describe('calcularAguinaldo: salario mínimo (I7)', () => {
     assert.ok(arriba.isr > 0);
   });
 });
+
+const baseFiniquito = {
+  salarioDiario: 500, fechaAntiguedad: '2024-05-10', fechaBaja: '2026-09-29', periodicidad: 'quincenal',
+};
+
+describe('calcularFiniquito con ISR: criterio 3', () => {
+  test('caso base quincenal → gravado 12,203.99, base 19,703.99, ISR 2,615.82, neto 13,891.03', () => {
+    const r = calcularFiniquito(baseFiniquito);
+    assert.equal(r.total, 16506.85);
+    const i = r.isr;
+    assert.equal(i.periodicidad, 'quincenal');
+    assert.equal(i.sueldoPeriodo, 7500);
+    assert.deepEqual(i.conceptos, {
+      sueldoPendiente: { exento: 0, gravado: 7000 },
+      vacaciones: { exento: 0, gravado: 3134.25 },
+      primaVacacional: { exento: 783.56, gravado: 0 },
+      aguinaldo: { exento: 3519.30, gravado: 2069.74 },
+    });
+    assert.equal(i.exentoTotal, 4302.86);
+    assert.equal(i.gravadoTotal, 12203.99);
+    assert.equal(i.ordinario.base, 7500);
+    assert.equal(aCentavos(i.ordinario.isr), 709.86);
+    assert.equal(i.conExtra.base, 19703.99);
+    // 2,795.25 + (19,703.99 − 17,448.76) × 23.52 % = 3,325.6781
+    assert.deepEqual(i.conExtra.renglon, { limiteInferior: 17448.76, cuotaFija: 2795.25, porcentaje: 23.52 });
+    assert.equal(aCentavos(i.conExtra.isr), 3325.68);
+    assert.equal(i.salarioMinimo, false);
+    assert.equal(i.isr, 2615.82); // 3,325.6781 − 709.8580 = 2,615.8201
+    assert.equal(r.neto, 13891.03);
+  });
+});
+
+describe('calcularFiniquito con ISR: exenciones, salario mínimo y errores', () => {
+  test('prima vacacional arriba de 15 UMA: exento 1,759.65 y el resto grava', () => {
+    // 20 días pendientes: vacaciones 26.2685 días → $13,134.25; prima 25 % → $3,283.56
+    const r = calcularFiniquito({ ...baseFiniquito, vacacionesPendientes: 20 });
+    assert.equal(r.conceptos.primaVacacional.monto, 3283.56);
+    assert.deepEqual(r.isr.conceptos.primaVacacional, { exento: 1759.65, gravado: 1523.91 });
+    assert.deepEqual(r.isr.conceptos.vacaciones, { exento: 0, gravado: 13134.25 });
+    assert.equal(r.isr.exentoTotal, 5278.95); // 1,759.65 + 3,519.30
+    assert.equal(r.isr.gravadoTotal, 23727.90); // 7,000 + 13,134.25 + 1,523.91 + 2,069.74
+    assert.equal(r.isr.conExtra.base, 31227.90);
+    // renglón 8: 5,159.70 + (31,227.90 − 27,501.61) × 30 % = 6,277.587; − 709.858 = 5,567.729
+    assert.equal(r.isr.conExtra.renglon.limiteInferior, 27501.61);
+    assert.equal(r.isr.isr, 5567.73);
+    assert.equal(r.total, 29006.85);
+    assert.equal(r.neto, 23439.12);
+  });
+
+  test('mensual: sueldo del periodo = diario × 30.4', () => {
+    const i = calcularFiniquito({ ...baseFiniquito, periodicidad: 'mensual' }).isr;
+    assert.equal(i.periodicidad, 'mensual');
+    assert.equal(i.sueldoPeriodo, 15200);
+    assert.equal(aCentavos(i.ordinario.isr), 1438.66);
+  });
+
+  test('criterio 4: diario $300 → ISR 0, neto = total; sí explica exento/gravado', () => {
+    const r = calcularFiniquito({ ...baseFiniquito, salarioDiario: 300 });
+    assert.equal(r.isr.salarioMinimo, true);
+    assert.equal(r.isr.isr, 0);
+    assert.equal(r.neto, r.total);
+    assert.ok(r.isr.gravadoTotal > 0);
+    assert.equal(r.isr.conExtra.base, r.isr.sueldoPeriodo + r.isr.gravadoTotal);
+  });
+
+  test('con errores: isr y neto null', () => {
+    const r = calcularFiniquito({ ...baseFiniquito, periodicidad: 'diaria' });
+    assert.equal(r.valido, false);
+    assert.equal(r.isr, null);
+    assert.equal(r.neto, null);
+  });
+});

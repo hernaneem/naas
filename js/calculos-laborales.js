@@ -307,7 +307,7 @@ export function calcularFiniquito({
     }
   }
 
-  if (errores.length > 0) return { valido: false, errores, avisos, conceptos: null, total: null };
+  if (errores.length > 0) return { valido: false, errores, avisos, conceptos: null, total: null, isr: null, neto: null };
 
   const diasAnio = prestaciones ? prestaciones.diasVacaciones : diasVacacionesLey(anioServicio);
   const porcentajePrima = prestaciones ? prestaciones.primaVacacional : MINIMOS_LEY.primaVacacional;
@@ -365,7 +365,15 @@ export function calcularFiniquito({
     conceptos.primaVacacional.monto + conceptos.aguinaldo.monto,
   );
 
-  return { valido: true, errores, avisos, conceptos, total };
+  // I2: el sueldo pendiente y las vacaciones gravan completos (sin tope de exención).
+  const isr = estimarIsr(salarioDiario, periodicidad, {
+    sueldoPendiente: conceptos.sueldoPendiente.monto,
+    vacaciones: conceptos.vacaciones.monto,
+    primaVacacional: conceptos.primaVacacional.monto,
+    aguinaldo: conceptos.aguinaldo.monto,
+  }, TOPES_EXENCION_2026);
+
+  return { valido: true, errores, avisos, conceptos, total, isr, neto: redondear(total - isr.isr) };
 }
 
 /**
