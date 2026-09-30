@@ -2319,6 +2319,11 @@ footer::before {
 }
 
 .footer-col ul li a {
+    /* Objetivo táctil ≥ 24px de alto; el margen negativo compensa el padding
+       para que el espaciado del footer no cambie en ninguna página. */
+    display: inline-block;
+    padding-block: 0.25rem;
+    margin-block: -0.25rem;
     color: rgba(255,255,255,0.6);
     text-decoration: none;
     font-size: 0.9rem;
