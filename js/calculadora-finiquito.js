@@ -45,34 +45,44 @@ let diasVacacionesEditado = false;
 
 const moneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' });
 const dosDecimales = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const entero = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 });
+const hastaDosDecimales = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 2 });
 
 const fmtMonto = (x) => moneda.format(x);
 const fmtDias = (x) => dosDecimales.format(x);
-const fmtNum = (x) => entero.format(x);
+const fmtNum = (x) => hastaDosDecimales.format(x);
 
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
   'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
-/** 'YYYY-MM-DD' → '15 de septiembre de 2026' (sin pasar por Date, para no mover el día por zona horaria). */
+// Fechas 'YYYY-MM-DD' como texto: sin pasar por Date local, para no mover el día por zona horaria.
+
+/** 'YYYY-MM-DD' → { anio, mes, dia }, o null si no tiene ese formato. */
+function leerFechaIso(texto) {
+  const partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto || '');
+  return partes ? { anio: Number(partes[1]), mes: Number(partes[2]), dia: Number(partes[3]) } : null;
+}
+
+/** (2026, 9, 3) → '2026-09-03'. */
+function aFechaIso(anio, mes, dia) {
+  return `${String(anio).padStart(4, '0')}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+}
+
+/** 'YYYY-MM-DD' → '15 de septiembre de 2026'. */
 function fmtFecha(texto) {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(texto || '');
-  if (!m) return texto;
-  return `${Number(m[3])} de ${MESES[Number(m[2]) - 1]} de ${Number(m[1])}`;
+  const fecha = leerFechaIso(texto);
+  return fecha ? `${fecha.dia} de ${MESES[fecha.mes - 1]} de ${fecha.anio}` : texto;
 }
 
 /** Suma n días a 'YYYY-MM-DD' en calendario UTC. */
 function sumarDias(texto, n) {
-  const [a, m, d] = texto.split('-').map(Number);
-  const f = new Date(Date.UTC(a, m - 1, d + n));
-  return [f.getUTCFullYear(), f.getUTCMonth() + 1, f.getUTCDate()]
-    .map((v, i) => String(v).padStart(i === 0 ? 4 : 2, '0')).join('-');
+  const { anio, mes, dia } = leerFechaIso(texto);
+  const suma = new Date(Date.UTC(anio, mes - 1, dia + n));
+  return aFechaIso(suma.getUTCFullYear(), suma.getUTCMonth() + 1, suma.getUTCDate());
 }
 
 function hoyLocal() {
-  const f = new Date();
-  return [f.getFullYear(), f.getMonth() + 1, f.getDate()]
-    .map((v, i) => String(v).padStart(i === 0 ? 4 : 2, '0')).join('-');
+  const hoy = new Date();
+  return aFechaIso(hoy.getFullYear(), hoy.getMonth() + 1, hoy.getDate());
 }
 
 // ---- Nodos ----
@@ -81,8 +91,8 @@ function el(tag, opciones = {}, hijos = []) {
   const nodo = document.createElement(tag);
   if (opciones.clase) nodo.className = opciones.clase;
   if (opciones.texto !== undefined) nodo.textContent = opciones.texto;
-  for (const [k, v] of Object.entries(opciones.attrs || {})) nodo.setAttribute(k, v);
-  for (const h of [].concat(hijos)) if (h) nodo.append(h);
+  for (const [nombre, valor] of Object.entries(opciones.attrs || {})) nodo.setAttribute(nombre, valor);
+  for (const hijo of [].concat(hijos)) if (hijo) nodo.append(hijo);
   return nodo;
 }
 
@@ -230,56 +240,65 @@ function textoPagadoHasta(pagadoHasta, fechaAntiguedad, fechaBaja) {
   return `Suponemos que tu último pago cubrió hasta el ${fmtFecha(pagadoHasta)}.`;
 }
 
-function pintarComoSeCalculo(entrada, r) {
-  const { sueldoPendiente: sp, vacaciones: v, primaVacacional: pv, aguinaldo: ag } = r.conceptos;
-  const sd = fmtMonto(entrada.salarioDiario);
+function pintarComoSeCalculo(entrada, resultado) {
+  const { sueldoPendiente, vacaciones, primaVacacional, aguinaldo } = resultado.conceptos;
+  const salarioDiario = fmtMonto(entrada.salarioDiario);
   const origen = entrada.prestaciones ? 'lo que da tu empresa' : 'la ley';
+  const nomina = `Con nómina ${entrada.periodicidad}`;
+  const { pagadoHasta } = sueldoPendiente;
 
-  const lineasSueldo = sp.dias > 0
+  const suposicion = sinPagoDesdeAntiguedad(pagadoHasta, entrada.fechaAntiguedad)
+    ? 'suponemos que aún no te han pagado nada desde tu fecha de antigüedad.'
+    : `suponemos que tu último pago cubrió hasta el ${fmtFecha(pagadoHasta)}.`;
+  const lineasSueldo = sueldoPendiente.dias > 0
     ? [
-      ['t', `Con nómina ${entrada.periodicidad}, ` +
-        (sinPagoDesdeAntiguedad(sp.pagadoHasta, entrada.fechaAntiguedad)
-          ? 'suponemos que aún no te han pagado nada desde tu fecha de antigüedad. '
-          : `suponemos que tu último pago cubrió hasta el ${fmtFecha(sp.pagadoHasta)}. `) +
-        `Del ${fmtFecha(sumarDias(sp.pagadoHasta, 1))} al ${fmtFecha(entrada.fechaBaja)} van ${fmtNum(sp.dias)} días.`],
-      ['f', `${fmtNum(sp.dias)} días × ${sd} = ${fmtMonto(sp.monto)}`],
+      ['t', `${nomina}, ${suposicion} Del ${fmtFecha(sumarDias(pagadoHasta, 1))} ` +
+        `al ${fmtFecha(entrada.fechaBaja)} van ${fmtNum(sueldoPendiente.dias)} días.`],
+      ['f', `${fmtNum(sueldoPendiente.dias)} días × ${salarioDiario} = ${fmtMonto(sueldoPendiente.monto)}`],
     ]
-    : [['t', `Con nómina ${entrada.periodicidad}: ${textoPagadoHasta(sp.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja)} No hay sueldo pendiente.`]];
+    : [['t', `${nomina}: ${textoPagadoHasta(pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja)} ` +
+      'No hay sueldo pendiente.']];
 
-  const brutas = (v.diasAnio * v.diasTranscurridos) / 365;
-  const lineasVac = [
-    ['t', `Vas en tu año de servicio ${v.anioServicio}; según ${origen} te tocan ${fmtNum(v.diasAnio)} días de vacaciones. ` +
-      `De tu último aniversario, el ${fmtFecha(v.ultimoAniversario)}, a tu baja van ${fmtNum(v.diasTranscurridos)} días.`],
-    ['f', `Proporcionales: ${fmtNum(v.diasAnio)} × ${fmtNum(v.diasTranscurridos)} ÷ 365 = ${fmtDias(brutas)} días`],
+  const brutas = (vacaciones.diasAnio * vacaciones.diasTranscurridos) / 365;
+  const lineasVacaciones = [
+    ['t', `Vas en tu año de servicio ${vacaciones.anioServicio}; según ${origen} te tocan ` +
+      `${fmtNum(vacaciones.diasAnio)} días de vacaciones. De tu último aniversario, el ` +
+      `${fmtFecha(vacaciones.ultimoAniversario)}, a tu baja van ${fmtNum(vacaciones.diasTranscurridos)} días.`],
+    ['f', `Proporcionales: ${fmtNum(vacaciones.diasAnio)} × ${fmtNum(vacaciones.diasTranscurridos)} ÷ 365 = ` +
+      `${fmtDias(brutas)} días`],
   ];
-  if (v.tomadas > 0) {
-    lineasVac.push(['f', `Menos las que ya tomaste: ${fmtDias(brutas)} − ${fmtDias(v.tomadas)} = ${fmtDias(v.proporcionales)} días` +
-      (v.notaNegativo ? ' (no baja de 0)' : '')]);
+  if (vacaciones.tomadas > 0) {
+    lineasVacaciones.push(['f', `Menos las que ya tomaste: ${fmtDias(brutas)} − ${fmtDias(vacaciones.tomadas)} = ` +
+      `${fmtDias(vacaciones.proporcionales)} días${vacaciones.notaNegativo ? ' (no baja de 0)' : ''}`]);
   }
-  if (v.pendientes > 0) {
-    lineasVac.push(['f', `Más las pendientes: ${fmtDias(v.proporcionales)} + ${fmtDias(v.pendientes)} = ${fmtDias(v.dias)} días`]);
+  if (vacaciones.pendientes > 0) {
+    lineasVacaciones.push(['f', `Más las pendientes: ${fmtDias(vacaciones.proporcionales)} + ` +
+      `${fmtDias(vacaciones.pendientes)} = ${fmtDias(vacaciones.dias)} días`]);
   }
-  lineasVac.push(['f', `${fmtDias(v.dias)} días × ${sd} = ${fmtMonto(v.monto)}`]);
+  lineasVacaciones.push(['f', `${fmtDias(vacaciones.dias)} días × ${salarioDiario} = ${fmtMonto(vacaciones.monto)}`]);
 
   const lineasPrima = [
-    ['f', `${fmtNum(pv.porcentaje)} % × ${fmtDias(pv.dias)} días × ${sd} = ${fmtMonto(pv.monto)}`],
+    ['f', `${fmtNum(primaVacacional.porcentaje)} % × ${fmtDias(primaVacacional.dias)} días × ${salarioDiario} = ` +
+      `${fmtMonto(primaVacacional.monto)}`],
   ];
 
   const lineasAguinaldo = [
-    ['t', `Del ${fmtFecha(ag.desde)} a tu baja trabajaste ${fmtNum(ag.diasTrabajados)} días de este año. ` +
-      `Según ${origen}, el aguinaldo es de ${fmtNum(ag.diasAguinaldo)} días.`],
-    ['f', `${fmtNum(ag.diasAguinaldo)} × ${fmtNum(ag.diasTrabajados)} ÷ 365 = ${fmtDias(ag.dias)} días`],
-    ['f', `${fmtDias(ag.dias)} días × ${sd} = ${fmtMonto(ag.monto)}`],
+    ['t', `Del ${fmtFecha(aguinaldo.desde)} a tu baja trabajaste ${fmtNum(aguinaldo.diasTrabajados)} días de este año. ` +
+      `Según ${origen}, el aguinaldo es de ${fmtNum(aguinaldo.diasAguinaldo)} días.`],
+    ['f', `${fmtNum(aguinaldo.diasAguinaldo)} × ${fmtNum(aguinaldo.diasTrabajados)} ÷ 365 = ${fmtDias(aguinaldo.dias)} días`],
+    ['f', `${fmtDias(aguinaldo.dias)} días × ${salarioDiario} = ${fmtMonto(aguinaldo.monto)}`],
   ];
 
+  const sumandos = [sueldoPendiente, vacaciones, primaVacacional, aguinaldo].map((concepto) => fmtMonto(concepto.monto));
   const lineasTotal = [
-    ['f', `${fmtMonto(sp.monto)} + ${fmtMonto(v.monto)} + ${fmtMonto(pv.monto)} + ${fmtMonto(ag.monto)} = ${fmtMonto(r.total)}`],
-    ['t', 'Los días se muestran con 2 decimales pero se calculan completos; cada concepto se redondea a centavos y el total es la suma de esos montos.'],
+    ['f', `${sumandos.join(' + ')} = ${fmtMonto(resultado.total)}`],
+    ['t', 'Los días se muestran con 2 decimales pero se calculan completos; cada concepto se redondea a centavos ' +
+      'y el total es la suma de esos montos.'],
   ];
 
   $('comoSeCalculoCuerpo').replaceChildren(
     paso('Sueldo pendiente', lineasSueldo),
-    paso('Vacaciones', lineasVac),
+    paso('Vacaciones', lineasVacaciones),
     paso('Prima vacacional', lineasPrima),
     paso('Aguinaldo proporcional', lineasAguinaldo),
     paso('Total', lineasTotal),
@@ -297,21 +316,21 @@ function pintarDatosCapturados(entrada, sueldo) {
     ['Vacaciones ya tomadas en tu año actual', `${fmtDias(entrada.vacacionesTomadas)} días`],
     ['Vacaciones pendientes de años anteriores', `${fmtDias(entrada.vacacionesPendientes)} días`],
   );
-  const p = entrada.prestaciones;
-  filas.push(['Prestaciones', p
-    ? `Superiores: ${fmtNum(p.diasAguinaldo)} días de aguinaldo, ${fmtNum(p.primaVacacional)} % de prima vacacional, ` +
-      `${fmtNum(p.diasVacaciones)} días de vacaciones`
+  const prestaciones = entrada.prestaciones;
+  filas.push(['Prestaciones', prestaciones
+    ? `Superiores: ${fmtNum(prestaciones.diasAguinaldo)} días de aguinaldo, ` +
+      `${fmtNum(prestaciones.primaVacacional)} % de prima vacacional, ${fmtNum(prestaciones.diasVacaciones)} días de vacaciones`
     : `De ley: ${MINIMOS_LEY.diasAguinaldo} días de aguinaldo, ${MINIMOS_LEY.primaVacacional} % de prima vacacional`]);
   filas.push(['Calculado el', fmtFecha(hoyLocal())]);
 
   $('datosCapturados').replaceChildren(
     el('h3', { clase: 'calc-datos-title', texto: 'Datos capturados' }),
-    el('dl', {}, filas.map(([k, v]) => el('div', {}, [el('dt', { texto: k }), el('dd', { texto: v })]))),
+    el('dl', {}, filas.map(([etiqueta, valor]) => el('div', {}, [el('dt', { texto: etiqueta }), el('dd', { texto: valor })]))),
   );
 }
 
-function pintarResultado(entrada, sueldo, r, erroresVisibles) {
-  const hayResultado = r.valido;
+function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
+  const hayResultado = resultado.valido;
   $('resultado').hidden = !hayResultado;
   $('estadoVacio').hidden = hayResultado || erroresVisibles > 0;
   $('estadoError').hidden = hayResultado || erroresVisibles === 0;
@@ -324,27 +343,27 @@ function pintarResultado(entrada, sueldo, r, erroresVisibles) {
     return;
   }
 
-  const { sueldoPendiente: sp, vacaciones: v, primaVacacional: pv, aguinaldo: ag } = r.conceptos;
-  $('total').textContent = fmtMonto(r.total);
-  $('totalAnuncio').textContent = `Finiquito estimado: ${fmtMonto(r.total)}`;
+  const { sueldoPendiente, vacaciones, primaVacacional, aguinaldo } = resultado.conceptos;
+  $('total').textContent = fmtMonto(resultado.total);
+  $('totalAnuncio').textContent = `Finiquito estimado: ${fmtMonto(resultado.total)}`;
 
-  const detalleVac = v.pendientes > 0
-    ? `${fmtDias(v.dias)} días (${fmtDias(v.proporcionales)} proporcionales + ${fmtDias(v.pendientes)} pendientes)`
-    : `${fmtDias(v.dias)} días proporcionales`;
+  const detalleVac = vacaciones.pendientes > 0
+    ? `${fmtDias(vacaciones.dias)} días (${fmtDias(vacaciones.proporcionales)} proporcionales + ${fmtDias(vacaciones.pendientes)} pendientes)`
+    : `${fmtDias(vacaciones.dias)} días proporcionales`;
 
   $('desglose').replaceChildren(
-    filaConcepto('Sueldo pendiente', `${fmtDias(sp.dias)} días`, sp.monto),
-    filaConcepto('Vacaciones', detalleVac, v.monto),
-    filaConcepto('Prima vacacional', `${fmtNum(pv.porcentaje)} % sobre ${fmtDias(pv.dias)} días`, pv.monto),
-    filaConcepto('Aguinaldo proporcional', `${fmtDias(ag.dias)} días`, ag.monto),
+    filaConcepto('Sueldo pendiente', `${fmtDias(sueldoPendiente.dias)} días`, sueldoPendiente.monto),
+    filaConcepto('Vacaciones', detalleVac, vacaciones.monto),
+    filaConcepto('Prima vacacional', `${fmtNum(primaVacacional.porcentaje)} % sobre ${fmtDias(primaVacacional.dias)} días`, primaVacacional.monto),
+    filaConcepto('Aguinaldo proporcional', `${fmtDias(aguinaldo.dias)} días`, aguinaldo.monto),
   );
 
-  const notas = [nota('info', textoPagadoHasta(sp.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja))];
-  if (v.notaNegativo) notas.push(nota('info', v.notaNegativo));
-  for (const aviso of r.avisos) notas.push(nota('aviso', aviso.mensaje));
+  const notas = [nota('info', textoPagadoHasta(sueldoPendiente.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja))];
+  if (vacaciones.notaNegativo) notas.push(nota('info', vacaciones.notaNegativo));
+  for (const aviso of resultado.avisos) notas.push(nota('aviso', aviso.mensaje));
   $('notas').replaceChildren(...notas);
 
-  pintarComoSeCalculo(entrada, r);
+  pintarComoSeCalculo(entrada, resultado);
   pintarDatosCapturados(entrada, sueldo);
 }
 
@@ -354,9 +373,9 @@ function actualizar() {
   sincronizarDiasVacacionesLey();
   const { sueldo, entrada } = leerEntrada();
   pintarSueldo(sueldo);
-  const r = calcularFiniquito(entrada);
-  const visibles = pintarErrores(r.errores);
-  pintarResultado(entrada, sueldo, r, visibles);
+  const resultado = calcularFiniquito(entrada);
+  const visibles = pintarErrores(resultado.errores);
+  pintarResultado(entrada, sueldo, resultado, visibles);
 }
 
 function marcarTocado(evento) {
