@@ -67,6 +67,10 @@ Días pendientes = días calendario después de la fecha pagada hasta la baja (i
 
 **D10 · Ubicación.** No va en el menú principal: columna "Herramientas" en el footer de todas las páginas. CTA final a la demo (`cal.com/hernaneem/reunion-naas`). Sin analytics ni captura de datos.
 
+**D11 · Ingreso dentro del último periodo.** Si el periodo que se supone pagado empieza antes de la fecha de antigüedad, se considera pagado hasta el día anterior a la antigüedad: nunca se cobra ni descuenta un periodo previo al ingreso.
+
+**D12 · Aviso de salario mínimo.** Como no se captura zona, solo avisa por debajo del mínimo general; el mensaje menciona también el de la frontera norte.
+
 ### Interfaz del motor
 
 ```js
