@@ -20,7 +20,7 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="calculadora.css?v=20260930">
+    <link rel="stylesheet" href="calculadora.css?v=20260930b">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -182,12 +182,33 @@
                             <p class="calc-error" id="err-diasAguinaldo" hidden></p>
                         </div>
                     </fieldset>
+
+                    <!-- Periodicidad -->
+                    <fieldset class="calc-group" data-campo="periodicidad" aria-describedby="periodicidadHint">
+                        <legend class="calc-group-title"><span class="calc-step" aria-hidden="true">4</span> Periodicidad de tu nómina</legend>
+                        <div class="calc-segmented calc-segmented-3">
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="semanal">
+                                <span>Semanal</span>
+                            </label>
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="quincenal" checked>
+                                <span>Quincenal</span>
+                            </label>
+                            <label class="calc-seg-option">
+                                <input type="radio" name="periodicidad" value="mensual">
+                                <span>Mensual</span>
+                            </label>
+                        </div>
+                        <p class="calc-hint" id="periodicidadHint">La usamos para estimar el ISR con la tarifa de tu periodo.</p>
+                        <p class="calc-error" id="err-periodicidad" hidden></p>
+                    </fieldset>
                 </form>
 
                 <!-- Barra fija en móvil con el total: sin live region (el anuncio ya lo hace #totalAnuncio) -->
                 <div class="calc-barra" id="barraTotal" hidden>
                     <p class="calc-barra-texto">
-                        <span class="calc-barra-label">Aguinaldo estimado</span>
+                        <span class="calc-barra-label">Recibirías aprox.</span>
                         <span class="calc-barra-monto" id="barraTotalMonto"></span>
                     </p>
                     <a class="calc-barra-link" href="#resultado-aguinaldo">Ver detalle</a>
@@ -203,9 +224,10 @@
 
                         <div class="calc-result-top">
                             <h2 id="resultadoTitulo" class="calc-result-title">Tu aguinaldo estimado</h2>
+                            <p class="calc-total-label" aria-hidden="true">Recibirías aprox.</p>
                             <p class="calc-total" id="total" aria-hidden="true">—</p>
                             <p class="sr-only" id="totalAnuncio" role="status" aria-live="polite" aria-atomic="true"></p>
-                            <p class="calc-total-sub" id="totalSub">Monto bruto, antes de ISR</p>
+                            <p class="calc-total-sub" id="totalSub">Neto después de ISR estimado</p>
                         </div>
 
                         <div class="calc-result-body">
@@ -242,12 +264,21 @@
                                 </button>
                             </div>
 
-                            <ul class="calc-legal">
-                                <li>Monto bruto, antes de ISR.</li>
-                                <li>Es una estimación, no asesoría legal.</li>
-                                <li>Las faltas injustificadas se descuentan de los días trabajados.</li>
-                                <li>La ley obliga a pagarlo antes del 20 de diciembre.</li>
-                            </ul>
+                            <div class="calc-legal">
+                                <p class="calc-legal-title">Sobre el ISR</p>
+                                <ul>
+                                    <li>Cálculo con tarifas ISR 2026, sin subsidio para el empleo: si ganas menos de ~$11,500 al mes, tu ISR real puede ser menor.</li>
+                                    <li>Tu empresa puede usar un método opcional (art. 174 RLISR) que suele retener menos.</li>
+                                    <li>Supone que este año no has usado tu exención de aguinaldo.</li>
+                                    <li>No incluye cuotas IMSS, INFONAVIT ni otras deducciones.</li>
+                                </ul>
+                                <p class="calc-legal-title">Sobre el cálculo</p>
+                                <ul>
+                                    <li>Es una estimación, no asesoría legal.</li>
+                                    <li>Las faltas injustificadas se descuentan de los días trabajados.</li>
+                                    <li>La ley obliga a pagarlo antes del 20 de diciembre.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -345,6 +376,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script type="module" src="js/calculadora-aguinaldo.js?v=20260930"></script>
+    <script type="module" src="js/calculadora-aguinaldo.js?v=20260930b"></script>
 </body>
 </html>

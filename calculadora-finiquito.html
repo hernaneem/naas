@@ -20,7 +20,7 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="calculadora.css?v=20260930">
+    <link rel="stylesheet" href="calculadora.css?v=20260930b">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -179,7 +179,7 @@
                                 <span>Mensual</span>
                             </label>
                         </div>
-                        <p class="calc-hint" id="periodicidadHint">La usamos para estimar los días trabajados que aún no te pagan.</p>
+                        <p class="calc-hint" id="periodicidadHint">La usamos para estimar los días que aún no te pagan y el ISR con la tarifa de tu periodo.</p>
                         <p class="calc-error" id="err-periodicidad" hidden></p>
                     </fieldset>
 
@@ -242,7 +242,7 @@
                 <!-- Barra fija en móvil con el total: sin live region (el anuncio ya lo hace #totalAnuncio) -->
                 <div class="calc-barra" id="barraTotal" hidden>
                     <p class="calc-barra-texto">
-                        <span class="calc-barra-label">Finiquito estimado</span>
+                        <span class="calc-barra-label">Recibirías aprox.</span>
                         <span class="calc-barra-monto" id="barraTotalMonto"></span>
                     </p>
                     <a class="calc-barra-link" href="#resultado-finiquito">Ver desglose</a>
@@ -258,9 +258,10 @@
 
                         <div class="calc-result-top">
                             <h2 id="resultadoTitulo" class="calc-result-title">Tu finiquito estimado</h2>
+                            <p class="calc-total-label" aria-hidden="true">Recibirías aprox.</p>
                             <p class="calc-total" id="total" aria-hidden="true">—</p>
                             <p class="sr-only" id="totalAnuncio" role="status" aria-live="polite" aria-atomic="true"></p>
-                            <p class="calc-total-sub" id="totalSub">Monto bruto, antes de ISR</p>
+                            <p class="calc-total-sub" id="totalSub">Neto después de ISR estimado</p>
                         </div>
 
                         <div class="calc-result-body">
@@ -277,7 +278,7 @@
                             </div>
 
                             <div id="resultado" hidden>
-                                <h3 class="sr-only">Desglose por concepto</h3>
+                                <h3 class="sr-only">Desglose por concepto, montos brutos</h3>
                                 <ul class="calc-breakdown" id="desglose"></ul>
                                 <div class="calc-notes" id="notas"></div>
 
@@ -297,13 +298,22 @@
                                 </button>
                             </div>
 
-                            <ul class="calc-legal">
-                                <li>Montos brutos, antes de ISR.</li>
-                                <li>Es una estimación, no asesoría legal.</li>
-                                <li>Las faltas injustificadas se descuentan del aguinaldo proporcional.</li>
-                                <li>Si ya recibiste tu aguinaldo de este año, no se suma.</li>
-                                <li>No incluye prima de antigüedad ni indemnización.</li>
-                            </ul>
+                            <div class="calc-legal">
+                                <p class="calc-legal-title">Sobre el ISR</p>
+                                <ul>
+                                    <li>Cálculo con tarifas ISR 2026, sin subsidio para el empleo: si ganas menos de ~$11,500 al mes, tu ISR real puede ser menor.</li>
+                                    <li>Tu empresa puede usar un método opcional (art. 174 RLISR) que suele retener menos.</li>
+                                    <li>Supone que este año no has usado tu exención de aguinaldo ni de prima vacacional.</li>
+                                    <li>No incluye cuotas IMSS, INFONAVIT ni otras deducciones.</li>
+                                </ul>
+                                <p class="calc-legal-title">Sobre el cálculo</p>
+                                <ul>
+                                    <li>Es una estimación, no asesoría legal.</li>
+                                    <li>Las faltas injustificadas se descuentan del aguinaldo proporcional.</li>
+                                    <li>Si ya recibiste tu aguinaldo de este año, no se suma.</li>
+                                    <li>No incluye prima de antigüedad ni indemnización.</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -435,6 +445,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script type="module" src="js/calculadora-finiquito.js?v=20260930"></script>
+    <script type="module" src="js/calculadora-finiquito.js?v=20260930b"></script>
 </body>
 </html>

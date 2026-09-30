@@ -1,12 +1,21 @@
 // Interfaz de la calculadora de finiquito: lee el formulario, llama al motor y pinta.
 // Toda la lógica de dinero vive en calculos-laborales.js; las piezas comunes de UI, en ui-calculadoras.js.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
-import { anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY } from './calculos-laborales.js?v=20260930';
+import {
+  anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY, TOPES_EXENCION_2026,
+} from './calculos-laborales.js?v=20260930b';
 import {
   $, fmtMonto, fmtDias, fmtNum, fmtFecha, sumarDias, hoyLocal, filaConcepto, nota, paso, lineasAguinaldo,
   leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
-  pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion,
-} from './ui-calculadoras.js?v=20260930';
+  pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion, pintarTotales, notaSalarioMinimo, bloqueIsr,
+} from './ui-calculadoras.js?v=20260930b';
+
+const NOMBRES_ISR = {
+  sueldoPendiente: 'Sueldo pendiente',
+  vacaciones: 'Vacaciones',
+  primaVacacional: 'Prima vacacional',
+  aguinaldo: 'Aguinaldo',
+};
 
 const form = $('calcForm');
 const campos = {
@@ -165,7 +174,7 @@ function pintarComoSeCalculo(entrada, resultado) {
 
   const sumandos = [sueldoPendiente, vacaciones, primaVacacional, aguinaldo].map((concepto) => fmtMonto(concepto.monto));
   const lineasTotal = [
-    ['f', `${sumandos.join(' + ')} = ${fmtMonto(resultado.total)}`],
+    ['r', `${sumandos.join(' + ')} = ${fmtMonto(resultado.total)}`],
     ['t', 'Los días se muestran con 2 decimales pero se calculan completos; cada concepto se redondea a centavos ' +
       'y el total es la suma de esos montos.'],
   ];
@@ -175,7 +184,16 @@ function pintarComoSeCalculo(entrada, resultado) {
     paso('Vacaciones', lineasVacaciones),
     paso('Prima vacacional', lineasPrima),
     paso('Aguinaldo proporcional', lineasAguinaldoFiniquito),
-    paso('Total', lineasTotal),
+    paso('Total bruto', lineasTotal),
+    bloqueIsr({
+      isr: resultado.isr,
+      salarioDiario: entrada.salarioDiario,
+      bruto: resultado.total,
+      neto: resultado.neto,
+      montos: Object.fromEntries(Object.keys(NOMBRES_ISR).map((c) => [c, resultado.conceptos[c].monto])),
+      nombres: NOMBRES_ISR,
+      topes: TOPES_EXENCION_2026,
+    }),
   );
 }
 
@@ -202,12 +220,11 @@ function pintarDatos(entrada, sueldo) {
 function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
   const hayResultado = resultado.valido;
   pintarEstado({ hayResultado, erroresVisibles });
-  mostrarTotal(hayResultado ? fmtMonto(resultado.total) : null);
+  mostrarTotal(hayResultado ? fmtMonto(resultado.neto) : null);
   if (!hayResultado) return;
 
   const { sueldoPendiente, vacaciones, primaVacacional, aguinaldo } = resultado.conceptos;
-  $('total').textContent = fmtMonto(resultado.total);
-  $('totalAnuncio').textContent = `Finiquito estimado: ${fmtMonto(resultado.total)}`;
+  pintarTotales('Finiquito estimado', resultado.total, resultado.isr, resultado.neto);
 
   const detalleVac = vacaciones.pendientes > 0
     ? `${fmtDias(vacaciones.dias)} días (${fmtDias(vacaciones.proporcionales)} proporcionales + ${fmtDias(vacaciones.pendientes)} pendientes)`
@@ -222,6 +239,8 @@ function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
 
   const notas = [nota('info', textoPagadoHasta(sueldoPendiente.pagadoHasta, entrada.fechaAntiguedad, entrada.fechaBaja))];
   if (vacaciones.notaNegativo) notas.push(nota('info', vacaciones.notaNegativo));
+  const notaMinimo = notaSalarioMinimo(resultado.isr);
+  if (notaMinimo) notas.push(notaMinimo);
   for (const aviso of resultado.avisos) notas.push(nota('aviso', aviso.mensaje));
   $('notas').replaceChildren(...notas);
 
