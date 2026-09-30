@@ -1,0 +1,8 @@
+# GitHub Pages (Jekyll): archivos del repo que no se publican en nominaas.com.
+exclude:
+  - package.json
+  - tests/
+  - docs/
+  - CLAUDE.md
+  - CONTEXT.md
+  - README.md
