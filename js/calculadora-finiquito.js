@@ -3,7 +3,7 @@
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
 import { anioDeServicio, calcularFiniquito, diasVacacionesLey, MINIMOS_LEY } from './calculos-laborales.js';
 import {
-  $, fmtMonto, fmtDias, fmtNum, fmtFecha, sumarDias, hoyLocal, filaConcepto, nota, paso,
+  $, fmtMonto, fmtDias, fmtNum, fmtFecha, sumarDias, hoyLocal, filaConcepto, nota, paso, lineasAguinaldo,
   leerNumero, valorRadio, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
   pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion,
 } from './ui-calculadoras.js';
@@ -155,11 +155,12 @@ function pintarComoSeCalculo(entrada, resultado) {
       `${fmtMonto(primaVacacional.monto)}`],
   ];
 
-  const lineasAguinaldo = [
+  const formulaAguinaldo = lineasAguinaldo(aguinaldo, entrada.salarioDiario, Boolean(entrada.prestaciones));
+  const lineasAguinaldoFiniquito = [
     ['t', `Del ${fmtFecha(aguinaldo.desde)} a tu baja trabajaste ${fmtNum(aguinaldo.diasTrabajados)} días de este año. ` +
-      `Según ${origen}, el aguinaldo es de ${fmtNum(aguinaldo.diasAguinaldo)} días.`],
-    ['f', `${fmtNum(aguinaldo.diasAguinaldo)} × ${fmtNum(aguinaldo.diasTrabajados)} ÷ 365 = ${fmtDias(aguinaldo.dias)} días`],
-    ['f', `${fmtDias(aguinaldo.dias)} días × ${salarioDiario} = ${fmtMonto(aguinaldo.monto)}`],
+      formulaAguinaldo.origen],
+    formulaAguinaldo.dias,
+    formulaAguinaldo.monto,
   ];
 
   const sumandos = [sueldoPendiente, vacaciones, primaVacacional, aguinaldo].map((concepto) => fmtMonto(concepto.monto));
@@ -173,7 +174,7 @@ function pintarComoSeCalculo(entrada, resultado) {
     paso('Sueldo pendiente', lineasSueldo),
     paso('Vacaciones', lineasVacaciones),
     paso('Prima vacacional', lineasPrima),
-    paso('Aguinaldo proporcional', lineasAguinaldo),
+    paso('Aguinaldo proporcional', lineasAguinaldoFiniquito),
     paso('Total', lineasTotal),
   );
 }
@@ -200,7 +201,7 @@ function pintarDatos(entrada, sueldo) {
 
 function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
   const hayResultado = resultado.valido;
-  pintarEstado({ hayResultado, erroresVisibles, vaciar: ['desglose', 'notas', 'comoSeCalculoCuerpo', 'datosCapturados'] });
+  pintarEstado({ hayResultado, erroresVisibles });
   mostrarTotal(hayResultado ? fmtMonto(resultado.total) : null);
   if (!hayResultado) return;
 

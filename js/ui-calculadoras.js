@@ -1,6 +1,13 @@
 // Piezas de interfaz compartidas por las calculadoras laborales (finiquito y aguinaldo).
 // Solo DOM y formatos; la lógica de dinero vive en calculos-laborales.js.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
+//
+// Contrato con el HTML: cada página de calculadora debe tener estos elementos.
+//   Formulario: radios name="tipoSueldo" (diario | mensual), #sueldo, #sueldoLabel, #diarioDerivado,
+//     y una caja #err-<campo> por cada campo del motor que se pase a pintarErrores.
+//   Resultado: .calc-result, .calc-result-top, #resultado, #estadoVacio, #estadoError, #total, #totalAnuncio,
+//     #desglose, #notas, #comoSeCalculo (<details>), #comoSeCalculoCuerpo, #datosCapturados, #imprimir.
+//   Barra fija en móvil: #barraTotal y #barraTotalMonto.
 
 export const $ = (id) => document.getElementById(id);
 
@@ -88,6 +95,20 @@ export function paso(titulo, lineas) {
     el('h4', { texto: titulo }),
     ...lineas.map(([tipo, texto]) => el('p', { clase: tipo === 'f' ? 'calc-formula' : undefined, texto })),
   ]);
+}
+
+/**
+ * Líneas de "¿Cómo se calculó?" del aguinaldo proporcional, iguales en las dos calculadoras.
+ * `aguinaldo`: salida del motor; `salarioDiario`: número; `deEmpresa`: los días los da la empresa (si no, la ley).
+ * Devuelve { origen, dias, monto }: el texto "Según …" y las fórmulas ['f', …] de días y de monto.
+ */
+export function lineasAguinaldo(aguinaldo, salarioDiario, deEmpresa) {
+  const { diasAguinaldo, diasTrabajados, dias, monto } = aguinaldo;
+  return {
+    origen: `Según ${deEmpresa ? 'lo que da tu empresa' : 'la ley'}, el aguinaldo es de ${fmtNum(diasAguinaldo)} días.`,
+    dias: ['f', `${fmtNum(diasAguinaldo)} × ${fmtNum(diasTrabajados)} ÷ 365 = ${fmtDias(dias)} días`],
+    monto: ['f', `${fmtDias(dias)} días × ${fmtMonto(salarioDiario)} = ${fmtMonto(monto)}`],
+  };
 }
 
 /** "Datos capturados" (solo se ve al imprimir): filas [[etiqueta, valor]]. */
@@ -196,11 +217,13 @@ export function conectarFormulario({ form, tocados, campoDeInput = {}, actualiza
 
 // ---- Resultado: estados vacío / error / listo ----
 
+const VACIAR_SIN_RESULTADO = ['desglose', 'notas', 'comoSeCalculoCuerpo', 'datosCapturados'];
+
 /**
  * Alterna estado vacío, estado de error y resultado; limpia el resultado si no hay.
- * `vaciar`: ids de contenedores que se limpian sin resultado.
+ * `vaciar`: ids de contenedores que se limpian sin resultado (por defecto, los del contrato de arriba).
  */
-export function pintarEstado({ hayResultado, erroresVisibles, vaciar }) {
+export function pintarEstado({ hayResultado, erroresVisibles, vaciar = VACIAR_SIN_RESULTADO }) {
   $('resultado').hidden = !hayResultado;
   $('estadoVacio').hidden = hayResultado || erroresVisibles > 0;
   $('estadoError').hidden = hayResultado || erroresVisibles === 0;
