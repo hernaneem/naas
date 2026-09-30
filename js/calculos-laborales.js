@@ -4,6 +4,78 @@
 export const SALARIO_MINIMO_2026 = Object.freeze({ general: 315.04, fronteraNorte: 440.87 });
 export const MINIMOS_LEY = Object.freeze({ diasAguinaldo: 15, primaVacacional: 25 });
 
+// ==== Cifras fiscales · VIGENTE 2026 ====
+// Actualizar cada enero/febrero (spec ISR, I8). Fuentes:
+// - Tarifas art. 96 LISR: Anexo 8 RMF 2026, DOF 28-12-2025, apartado B, fr. II (7 días), IV (15 días) y V (mensual).
+// - UMA 2026: DOF 09-01-2026 (INEGI), $117.31 diarios, vigente desde el 01-02-2026.
+// - Exenciones: art. 93 fr. XIV LISR (aguinaldo 30 UMA, prima vacacional 15 UMA por año calendario).
+// Detalle: docs/research/2026-09-30-isr-finiquito-aguinaldo.md
+// Renglones: [límite inferior, cuota fija, % sobre excedente del límite inferior].
+
+export const UMA_2026 = 117.31;
+
+const TARIFAS_ISR_2026 = Object.freeze({
+  semanal: [
+    [0.01, 0.00, 1.92],
+    [194.47, 3.71, 6.40],
+    [1650.68, 96.95, 10.88],
+    [2900.88, 232.96, 16.00],
+    [3372.12, 308.35, 17.92],
+    [4037.33, 427.56, 21.36],
+    [8142.76, 1304.45, 23.52],
+    [12834.09, 2407.86, 30.00],
+    [24502.46, 5908.35, 32.00],
+    [32669.92, 8521.94, 34.00],
+    [98009.67, 30737.49, 35.00],
+  ],
+  quincenal: [
+    [0.01, 0.00, 1.92],
+    [416.71, 7.95, 6.40],
+    [3537.16, 207.75, 10.88],
+    [6216.16, 499.20, 16.00],
+    [7225.96, 660.75, 17.92],
+    [8651.41, 916.20, 21.36],
+    [17448.76, 2795.25, 23.52],
+    [27501.61, 5159.70, 30.00],
+    [52505.26, 12660.75, 32.00],
+    [70006.96, 18261.30, 34.00],
+    [210020.71, 65866.05, 35.00],
+  ],
+  mensual: [
+    [0.01, 0.00, 1.92],
+    [844.60, 16.22, 6.40],
+    [7168.52, 420.95, 10.88],
+    [12598.03, 1011.68, 16.00],
+    [14644.65, 1339.14, 17.92],
+    [17533.65, 1856.84, 21.36],
+    [35362.84, 5665.16, 23.52],
+    [55736.69, 10457.09, 30.00],
+    [106410.51, 25659.23, 32.00],
+    [141880.67, 37009.69, 34.00],
+    [425642.00, 133488.54, 35.00],
+  ],
+});
+
+// ==== Fin de cifras fiscales 2026 ====
+
+/**
+ * ISR del periodo (art. 96 LISR) con la tarifa 2026 de la periodicidad.
+ * Renglón = el último cuyo límite inferior ≤ base. `isr` sin redondear. Base menor a $0.01 → ISR 0, sin renglón.
+ */
+export function calcularIsrPeriodo(base, periodicidad) {
+  if (!Object.hasOwn(TARIFAS_ISR_2026, periodicidad)) throw new RangeError(`Periodicidad sin tarifa ISR: ${periodicidad}`);
+  const tarifa = TARIFAS_ISR_2026[periodicidad];
+  let fila = null;
+  for (const f of tarifa) if (f[0] <= base) fila = f;
+  if (!fila) return { base, renglon: null, isr: 0 };
+  const [limiteInferior, cuotaFija, porcentaje] = fila;
+  return {
+    base,
+    renglon: { limiteInferior, cuotaFija, porcentaje },
+    isr: cuotaFija + ((base - limiteInferior) * porcentaje) / 100,
+  };
+}
+
 /** Días de vacaciones de ley (LFT 2023) para un año de servicio (1, 2, 3…). */
 export function diasVacacionesLey(anioServicio) {
   if (anioServicio <= 5) return 10 + 2 * anioServicio;
