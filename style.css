@@ -2284,7 +2284,9 @@ footer::before {
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 2fr repeat(4, 1fr);
+    /* Las columnas de enlaces nunca bajan de su contenido: así "Calculadora de aguinaldo"
+       no se parte en dos líneas y la marca cede el espacio que falte. */
+    grid-template-columns: 2fr repeat(4, minmax(max-content, 1fr));
     gap: 3rem;
     margin-bottom: 3rem;
 }
@@ -2331,6 +2333,19 @@ footer::before {
 }
 
 .footer-col ul li a:hover {
+    color: var(--accent);
+}
+
+/* Página actual: un poco más clara y subrayada en naranja tenue. */
+.footer-col ul li a[aria-current="page"] {
+    color: rgba(255,255,255,0.9);
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 107, 53, 0.6);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+}
+
+.footer-col ul li a[aria-current="page"]:hover {
     color: var(--accent);
 }
 

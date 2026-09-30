@@ -10,19 +10,22 @@ Sitio público de NaaS: HTML + CSS + JS sin build, publicado con GitHub Pages de
 - Ver en local: `python3 -m http.server 8000`.
 
 ## Hecho
-- Ola 1 calculadora de finiquito (rama `feature/calculadora-finiquito`, issues #1–#4): motor probado (85 pruebas), página `calculadora-finiquito.html`, columna "Herramientas" en el footer. Spec: `docs/specs/2026-09-29-calculadora-finiquito.md`. QA: `docs/qa/checklist-calculadora-finiquito.md`.
+- Ola 1 calculadora de finiquito (rama `feature/calculadora-finiquito`, issues #1–#4): motor probado (85 pruebas), página `calculadora-finiquito.html`, columna "Herramientas" en el footer. Spec: `docs/specs/2026-09-29-calculadora-finiquito.md`. QA: `docs/qa/checklist-calculadora-finiquito.md`. En producción desde 2026-09-30.
+- Ola 2 calculadora de aguinaldo (rama `feature/calculadora-aguinaldo`, issues #8–#9): `calcularAguinaldo` en el motor (una sola regla de aguinaldo con el finiquito), módulo compartido `js/ui-calculadoras.js`, página `calculadora-aguinaldo.html`, enlaces cruzados. 140 pruebas. Spec: `docs/specs/2026-09-30-calculadora-aguinaldo.md`. QA: `docs/qa/checklist-calculadora-aguinaldo.md`.
+- Caché: los módulos y `calculadora.css` llevan `?v=AAAAMMDD`; al cambiar cualquiera se sube la versión en todos los tags e imports.
 
 ## Pendiente
-- Ola 2: calculadora de aguinaldo reutilizando el motor.
 - Olas futuras: prima de antigüedad + motivo de baja, liquidación, ISR/neto.
-- Auditoría: #5 (`NaaS Info/` se publica), #6 (CSP), #7 (versionar assets).
+- Auditoría: #5 (`NaaS Info/` se publica), #6 (CSP), #7 (versionar assets: resuelto para las calculadoras; falta `style.css`/`script.js`).
 - Sin favicon ni imagen OG 1200×630 en el sitio.
 
 ## Depende de Hernán
 | Qué | Estado |
 |---|---|
 | Correr la checklist de QA en local | pendiente |
-| Merge/push de `feature/calculadora-finiquito` a `main` (= deploy) | pendiente |
+| Merge/push de `feature/calculadora-finiquito` a `main` | hecho 2026-09-30 |
+| Merge/push de `feature/calculadora-aguinaldo` a `main` (= deploy) | pendiente |
+| Revisar decisiones A1–A3 y copy de aguinaldo | pendiente |
 | Decidir #5: ¿`NaaS Info/` debe seguir público? | pendiente |
 | Validar copy legal y CTA de la página | pendiente |
 
