@@ -2,12 +2,12 @@
 // Toda la lógica de dinero vive en calculos-laborales.js; las piezas comunes de UI, en ui-calculadoras.js.
 // Regla: los datos se pintan con textContent o nodos creados; nunca con innerHTML.
 // Spec: docs/specs/2026-09-30-calculadora-aguinaldo.md
-import { calcularAguinaldo, MINIMOS_LEY } from './calculos-laborales.js';
+import { calcularAguinaldo, MINIMOS_LEY } from './calculos-laborales.js?v=20260930';
 import {
   $, fmtMonto, fmtDias, fmtNum, fmtFecha, hoyLocal, leerFechaIso, filaValor, nota, paso, lineasAguinaldo,
   leerNumero, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
   pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion,
-} from './ui-calculadoras.js';
+} from './ui-calculadoras.js?v=20260930';
 
 const form = $('calcForm');
 const campos = {

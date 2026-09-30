@@ -8,6 +8,11 @@
 //   Resultado: .calc-result, .calc-result-top, #resultado, #estadoVacio, #estadoError, #total, #totalAnuncio,
 //     #desglose, #notas, #comoSeCalculo (<details>), #comoSeCalculoCuerpo, #datosCapturados, #imprimir.
 //   Barra fija en móvil: #barraTotal y #barraTotalMonto.
+//
+// Caché entre deploys: los módulos se cargan con ?v=AAAAMMDD en los <script type="module">, en el
+// <link> de calculadora.css y en TODOS los imports relativos entre módulos. Al cambiar cualquier módulo
+// (o calculadora.css), sube la versión en todos esos lugares a la vez para que nunca se mezclen
+// un módulo nuevo y uno viejo en caché.
 
 export const $ = (id) => document.getElementById(id);
 
