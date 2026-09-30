@@ -993,12 +993,25 @@
     }
 }
 
+/* Sin movimiento: ninguna transición ni animación en los elementos de la calculadora
+   (incluye el scale al presionar y el scroll suave de "Ver desglose"). */
 @media (prefers-reduced-motion: reduce) {
-    .calc-switch input[type="checkbox"]::before,
-    .calc-optional summary .bx,
-    .calc-how summary .bx,
-    .calc-faq-list summary .bx {
-        transition: none;
+    html {
+        scroll-behavior: auto;
+    }
+
+    [class*="calc-"],
+    [class*="calc-"] *,
+    [class*="calc-"] *::before,
+    [class*="calc-"] *::after,
+    [class*="calc-"]::before,
+    [class*="calc-"]::after {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    .calc-print-btn:active {
+        scale: none;
     }
 }
 
