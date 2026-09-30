@@ -46,12 +46,11 @@
     line-height: 1.5;
 }
 
+/* En línea (no flex) para que la flecha siga a la última palabra cuando el texto se parte;
+   el padding amplía el área de toque sin mover el texto. */
 .calc-hero-link a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    min-height: 44px;
-    padding: 0.25rem 0.5rem;
+    display: inline;
+    padding: 0.6rem 0.25rem;
     border-radius: 8px;
     color: #FF8F5E;
     font-weight: 600;
@@ -66,7 +65,9 @@
 }
 
 .calc-hero-link .bx {
+    margin-inline-start: 0.25rem;
     font-size: 1.2rem;
+    vertical-align: -0.2em;
 }
 
 @media (hover: hover) {
