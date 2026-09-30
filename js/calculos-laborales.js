@@ -1,5 +1,5 @@
 // Motor de cálculos laborales (México). Módulo puro: sin DOM ni dependencias.
-// Spec: docs/specs/2026-09-29-calculadora-finiquito.md
+// Specs: docs/specs/2026-09-29-calculadora-finiquito.md y docs/specs/2026-09-30-calculadora-aguinaldo.md
 
 export const SALARIO_MINIMO_2026 = Object.freeze({ general: 315.04, fronteraNorte: 440.87 });
 export const MINIMOS_LEY = Object.freeze({ diasAguinaldo: 15, primaVacacional: 25 });
@@ -82,6 +82,38 @@ function ultimoAniversarioYAnios(antiguedad, baja) {
   return { anios, ultimoAniversario: aniversario(a.anio + anios) };
 }
 
+/** Salario diario > 0 (error) y aviso sin bloqueo por debajo del mínimo general (D5, D12). */
+function validarSalario(salarioDiario, error, avisos) {
+  if (!esNumero(salarioDiario) || salarioDiario <= 0) {
+    error('salarioDiario', 'Captura tu salario diario (o tu sueldo mensual); debe ser mayor a cero.');
+  } else if (salarioDiario < SALARIO_MINIMO_2026.general) {
+    avisos.push({
+      campo: 'salarioDiario',
+      mensaje: `Tu salario diario es menor al salario mínimo 2026 ($${SALARIO_MINIMO_2026.general.toFixed(2)} ` +
+        `general; $${SALARIO_MINIMO_2026.fronteraNorte.toFixed(2)} en la zona libre de la frontera norte). ` +
+        'Revisa que lo hayas capturado bien.',
+    });
+  }
+}
+
+/**
+ * Aguinaldo proporcional (D4 / A1), la única implementación de la regla.
+ * Días trabajados = del 1 de enero del año de `hasta` (o de la antigüedad, si es posterior) a `hasta`,
+ * ambos incluidos, tope 365; divisor siempre 365. Recibe fechas ya validadas (números de día).
+ */
+function aguinaldoProporcional(antiguedad, hasta, diasAguinaldo, salarioDiario) {
+  const desde = Math.max(aDia(partes(hasta).anio, 1, 1), antiguedad);
+  const diasTrabajados = Math.min(hasta - desde + 1, 365);
+  const dias = (diasAguinaldo * diasTrabajados) / 365;
+  return {
+    diasAguinaldo,
+    desde: aTexto(desde),
+    diasTrabajados,
+    dias,
+    monto: redondear(dias * salarioDiario),
+  };
+}
+
 /**
  * Año de servicio en curso (1, 2, 3…) entre la fecha de antigüedad y la de baja ('YYYY-MM-DD').
  * null si alguna fecha no es válida o la baja es anterior a la antigüedad.
@@ -106,16 +138,7 @@ export function calcularFiniquito({
   const avisos = [];
   const error = (campo, mensaje) => errores.push({ campo, mensaje });
 
-  if (!esNumero(salarioDiario) || salarioDiario <= 0) {
-    error('salarioDiario', 'Captura tu salario diario (o tu sueldo mensual); debe ser mayor a cero.');
-  } else if (salarioDiario < SALARIO_MINIMO_2026.general) {
-    avisos.push({
-      campo: 'salarioDiario',
-      mensaje: `Tu salario diario es menor al salario mínimo 2026 ($${SALARIO_MINIMO_2026.general.toFixed(2)} ` +
-        `general; $${SALARIO_MINIMO_2026.fronteraNorte.toFixed(2)} en la zona libre de la frontera norte). ` +
-        'Revisa que lo hayas capturado bien.',
-    });
-  }
+  validarSalario(salarioDiario, error, avisos);
 
   const antiguedad = leerFecha(fechaAntiguedad);
   const baja = leerFecha(fechaBaja);
@@ -178,10 +201,6 @@ export function calcularFiniquito({
     : null;
   const diasVacaciones = proporcionales + vacacionesPendientes;
 
-  // Aguinaldo (D4)
-  const desde = Math.max(aDia(partes(baja).anio, 1, 1), antiguedad);
-  const diasTrabajados = Math.min(baja - desde + 1, 365);
-  const diasAguinaldoProp = (diasAguinaldo * diasTrabajados) / 365;
 
   const conceptos = {
     sueldoPendiente: {
@@ -206,13 +225,7 @@ export function calcularFiniquito({
       dias: diasVacaciones,
       monto: redondear((porcentajePrima / 100) * diasVacaciones * salarioDiario),
     },
-    aguinaldo: {
-      diasAguinaldo,
-      desde: aTexto(desde),
-      diasTrabajados,
-      dias: diasAguinaldoProp,
-      monto: redondear(diasAguinaldoProp * salarioDiario),
-    },
+    aguinaldo: aguinaldoProporcional(antiguedad, baja, diasAguinaldo, salarioDiario),
   };
 
   const total = redondear(
@@ -221,4 +234,38 @@ export function calcularFiniquito({
   );
 
   return { valido: true, errores, avisos, conceptos, total };
+}
+
+/**
+ * Aguinaldo proporcional del año de la fecha de corte ("Calcular al"), sin finiquito.
+ * Spec: docs/specs/2026-09-30-calculadora-aguinaldo.md (A1, A2, A4).
+ */
+export function calcularAguinaldo({
+  salarioDiario,
+  fechaAntiguedad,
+  fechaCorte,
+  diasAguinaldo = MINIMOS_LEY.diasAguinaldo,
+} = {}) {
+  const errores = [];
+  const avisos = [];
+  const error = (campo, mensaje) => errores.push({ campo, mensaje });
+
+  validarSalario(salarioDiario, error, avisos);
+
+  const antiguedad = leerFecha(fechaAntiguedad);
+  const corte = leerFecha(fechaCorte);
+  if (antiguedad === null) error('fechaAntiguedad', 'Captura una fecha de antigüedad válida.');
+  if (corte === null) error('fechaCorte', 'Captura una fecha válida en «Calcular al».');
+  if (antiguedad !== null && corte !== null && corte < antiguedad) {
+    error('fechaCorte', 'La fecha de «Calcular al» no puede ser anterior a tu fecha de antigüedad.');
+  }
+
+  if (!esNumero(diasAguinaldo) || diasAguinaldo < MINIMOS_LEY.diasAguinaldo) {
+    error('diasAguinaldo', `Los días de aguinaldo no pueden ser menos de ${MINIMOS_LEY.diasAguinaldo}, el mínimo de ley.`);
+  }
+
+  if (errores.length > 0) return { valido: false, errores, avisos, aguinaldo: null };
+
+  const { desde, ...resto } = aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario);
+  return { valido: true, errores, avisos, aguinaldo: { desde, hasta: aTexto(corte), ...resto } };
 }
