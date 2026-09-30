@@ -462,21 +462,16 @@
 }
 
 /* ---------- Resultado ---------- */
-.calc-result {
-    position: sticky;
-    top: 92px;
-}
-
+/* La tarjeta crece con su contenido y se lee con el scroll de la página (sin caja con
+   scroll interno). Solo el encabezado con el total queda fijo bajo el header mientras
+   la tarjeta está en pantalla; el botón de imprimir se alcanza con el scroll normal. */
 .calc-result-card {
     background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    max-height: calc(100vh - 110px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
+    /* clip (no hidden) para no crear un contenedor de scroll que anule el sticky del total */
+    overflow: clip;
 }
 
 .calc-print-head,
@@ -485,7 +480,9 @@
 }
 
 .calc-result-top {
-    position: relative;
+    position: sticky;
+    top: 92px;
+    z-index: 1;
     padding: 1.6rem 1.75rem 1.5rem;
     background: var(--bg-gradient);
     color: var(--text-light);
@@ -887,13 +884,10 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .calc-result {
-        position: static;
-    }
-
-    .calc-result-card {
-        max-height: none;
-        overflow: hidden;
+    /* Apilado: el total fijo lo da la barra inferior (.calc-barra) */
+    .calc-result-top {
+        position: relative;
+        top: auto;
     }
 }
 
@@ -979,12 +973,11 @@
         margin: 0;
     }
 
-    .calc-result {
+    .calc-result-top {
         position: static;
     }
 
     .calc-result-card {
-        max-height: none;
         overflow: visible;
         border: 0;
         border-radius: 0;
