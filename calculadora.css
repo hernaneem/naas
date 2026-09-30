@@ -1,5 +1,5 @@
 /* ============================================
-   Calculadoras laborales (finiquito; reutilizable para aguinaldo)
+   Calculadoras laborales (finiquito y aguinaldo)
    Depende de los tokens de style.css.
    ============================================ */
 :root {
@@ -37,6 +37,47 @@
 
 .calc-hero p:not(.eyebrow) {
     text-wrap: pretty;
+}
+
+/* Enlace cruzado entre calculadoras */
+.calc-hero .calc-hero-link {
+    margin-top: 1.25rem;
+    font-size: 0.98rem;
+    line-height: 1.5;
+}
+
+.calc-hero-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 44px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    color: #FF8F5E;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.calc-hero-link a span {
+    text-decoration: underline;
+    text-decoration-color: rgba(255, 143, 94, 0.45);
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms var(--calc-ease);
+}
+
+.calc-hero-link .bx {
+    font-size: 1.2rem;
+}
+
+@media (hover: hover) {
+    .calc-hero-link a:hover span {
+        text-decoration-color: currentColor;
+    }
+}
+
+.calc-hero-link a:focus-visible {
+    outline: 3px solid #FF8F5E;
+    outline-offset: 2px;
 }
 
 /* ---------- Layout ---------- */
@@ -108,6 +149,11 @@
 
 .calc-field {
     min-width: 0;
+}
+
+/* Campo numérico solo: no se estira a todo el ancho del formulario */
+.calc-field-corto {
+    max-width: 16rem;
 }
 
 .calc-field > label,

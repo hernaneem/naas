@@ -62,16 +62,19 @@ export function el(tag, opciones = {}, hijos = []) {
 
 export const icono = (nombre) => el('i', { clase: `bx ${nombre}`, attrs: { 'aria-hidden': 'true' } });
 
-/** Fila del desglose: nombre, detalle en gris y monto a la derecha. */
-export function filaConcepto(nombre, detalle, monto) {
+/** Fila del desglose: nombre, detalle en gris y un valor ya formateado a la derecha. */
+export function filaValor(nombre, detalle, valor) {
   return el('li', { clase: 'calc-line' }, [
     el('span', { clase: 'calc-line-name' }, [
       el('span', { texto: nombre }),
       el('span', { clase: 'calc-line-detail', texto: detalle }),
     ]),
-    el('span', { clase: 'calc-line-amount', texto: fmtMonto(monto) }),
+    el('span', { clase: 'calc-line-amount', texto: valor }),
   ]);
 }
+
+/** Fila del desglose con un monto en pesos. */
+export const filaConcepto = (nombre, detalle, monto) => filaValor(nombre, detalle, fmtMonto(monto));
 
 /** Nota bajo el resultado: 'info' o 'aviso'. */
 export function nota(tipo, texto) {
