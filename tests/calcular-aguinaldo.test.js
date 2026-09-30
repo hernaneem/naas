@@ -40,7 +40,7 @@ describe('calcularAguinaldo: criterios de aceptación', () => {
     });
   });
 
-  test('criterio 2: ingreso a mitad de año (2026-06-01) → 214 días, 8.79 días, $4,397.26', () => {
+  test('criterio 2: antigüedad a mitad de año (2026-06-01) → 214 días, 8.79 días, $4,397.26', () => {
     const a = calcularAguinaldo({ ...base, fechaAntiguedad: '2026-06-01' }).aguinaldo;
     assert.equal(a.desde, '2026-06-01');
     assert.equal(a.hasta, '2026-12-31');

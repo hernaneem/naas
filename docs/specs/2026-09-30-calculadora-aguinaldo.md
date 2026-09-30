@@ -58,7 +58,7 @@ Implementación (ticket #9): la regla vive en una función interna `aguinaldoPro
 
 ## Testing
 
-Seam: `calcularAguinaldo` con `node --test`. Casos: año completo (15 días exactos), ingreso a mitad de año, corte antes de diciembre, año bisiesto al 31 de diciembre (tope 365), antigüedad de años anteriores, días superiores, validaciones y aviso de salario mínimo, y que `calcularFiniquito` siga dando lo mismo (las pruebas existentes no cambian). UI verificada en navegador.
+Seam: `calcularAguinaldo` con `node --test`. Casos: año completo (15 días exactos), antigüedad a mitad de año, corte antes de diciembre, año bisiesto al 31 de diciembre (tope 365), antigüedad de años anteriores, días superiores, validaciones y aviso de salario mínimo, y que `calcularFiniquito` siga dando lo mismo (las pruebas existentes no cambian). UI verificada en navegador.
 
 ## Producción
 
