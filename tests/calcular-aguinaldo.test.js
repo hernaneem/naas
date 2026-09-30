@@ -35,6 +35,8 @@ describe('calcularAguinaldo: criterios de aceptación', () => {
       diasTrabajados: 365,
       dias: 15,
       monto: 7500,
+      topado: false,
+      desdeAntiguedad: false,
     });
   });
 
@@ -46,6 +48,8 @@ describe('calcularAguinaldo: criterios de aceptación', () => {
     assert.equal(a.dias, (15 * 214) / 365);
     assert.equal(a.dias.toFixed(2), '8.79');
     assert.equal(a.monto, 4397.26);
+    assert.equal(a.desdeAntiguedad, true);
+    assert.equal(a.topado, false);
   });
 
   test('criterio 3: corte antes de diciembre (2026-09-29) → 272 días, $5,589.04', () => {
@@ -82,6 +86,26 @@ describe('calcularAguinaldo: reglas de A1 / D4', () => {
     assert.equal(a.diasTrabajados, 365);
     assert.equal(a.dias, 15);
     assert.equal(a.monto, 7500);
+    assert.equal(a.topado, true);
+    assert.equal(a.desdeAntiguedad, false);
+  });
+
+  test('año no bisiesto al 31 de dic: 365 días exactos, sin tope', () => {
+    assert.equal(calcularAguinaldo(base).aguinaldo.topado, false);
+  });
+
+  test('antigüedad el 1 de enero del año de corte: cuenta desde el 1 de enero, no desde la antigüedad', () => {
+    const a = calcularAguinaldo({ ...base, fechaAntiguedad: '2026-01-01' }).aguinaldo;
+    assert.equal(a.desde, '2026-01-01');
+    assert.equal(a.desdeAntiguedad, false);
+  });
+
+  test('antigüedad en un año y corte en el siguiente: cuenta desde el 1 de enero del año de corte', () => {
+    const a = calcularAguinaldo({ ...base, fechaAntiguedad: '2026-11-01', fechaCorte: '2027-03-15' }).aguinaldo;
+    assert.equal(a.desde, '2027-01-01');
+    assert.equal(a.hasta, '2027-03-15');
+    assert.equal(a.diasTrabajados, 74);
+    assert.equal(a.desdeAntiguedad, false);
   });
 
   test('antigüedad de años anteriores: cuenta desde el 1 de enero del año de corte', () => {
@@ -129,8 +153,10 @@ describe('calcularAguinaldo: una sola regla con calcularFiniquito (A4)', () => {
           salarioDiario: 437.5, fechaAntiguedad, fechaBaja: fecha, periodicidad: 'quincenal',
           prestaciones: { diasAguinaldo, primaVacacional: 25, diasVacaciones: 40 },
         }).conceptos.aguinaldo;
-        const { hasta, ...resto } = ag;
+        const { hasta, topado, desdeAntiguedad, ...resto } = ag;
         assert.equal(hasta, fecha);
+        assert.equal(typeof topado, 'boolean');
+        assert.equal(typeof desdeAntiguedad, 'boolean');
         assert.deepEqual(resto, fin);
       }
     });
@@ -166,6 +192,18 @@ describe('calcularAguinaldo: validaciones que bloquean', () => {
       assertBloqueado(calcularAguinaldo({ ...base, diasAguinaldo }), 'diasAguinaldo');
     });
   }
+
+  for (const diasAguinaldo of ['', null, NaN]) {
+    test(`días de aguinaldo vacíos (${String(diasAguinaldo) || "''"}) → pide capturarlos`, () => {
+      const r = calcularAguinaldo({ ...base, diasAguinaldo });
+      assert.equal(r.errores[0].mensaje, 'Captura tus días de aguinaldo (mínimo 15).');
+    });
+  }
+
+  test('días de aguinaldo menores a 15 → mensaje del mínimo de ley', () => {
+    const r = calcularAguinaldo({ ...base, diasAguinaldo: 14.99 });
+    assert.equal(r.errores[0].mensaje, 'Los días de aguinaldo no pueden ser menos de 15, el mínimo de ley.');
+  });
 
   test('sin argumentos no truena: errores en salario y fechas', () => {
     const r = calcularAguinaldo();

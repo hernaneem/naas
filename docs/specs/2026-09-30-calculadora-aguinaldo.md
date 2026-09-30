@@ -42,13 +42,19 @@ calcularAguinaldo({
   diasAguinaldo = 15,   // >= 15
 }) → {
   valido, errores: [{ campo, mensaje }], avisos: [{ campo, mensaje }],
-  aguinaldo: { diasAguinaldo, desde, hasta, diasTrabajados, dias, monto } | null,
+  aguinaldo: {
+    diasAguinaldo, desde, hasta, diasTrabajados, dias, monto,
+    topado,           // bool: los días del periodo pasaban de 365 (año bisiesto completo) y se toparon
+    desdeAntiguedad,  // bool: el conteo empieza en la fecha de antigüedad y no en el 1 de enero
+  } | null,
 }
 ```
 
-Validaciones que bloquean: salario vacío o ≤ 0, fechas inválidas, fecha de corte anterior a la antigüedad, días de aguinaldo < 15.
+La interfaz solo explica el resultado con `topado` y `desdeAntiguedad`; no recalcula reglas de negocio.
 
-Implementación (ticket #9): la interfaz quedó igual. La regla vive en una función interna `aguinaldoProporcional(antiguedad, hasta, diasAguinaldo, salarioDiario)` que usan `calcularAguinaldo` y `calcularFiniquito`; `calcularFiniquito` sigue devolviendo su aguinaldo sin `hasta`. La validación del salario y el aviso de salario mínimo también son internos y compartidos (`validarSalario`), así que el aviso es el mismo texto en las dos calculadoras. Pruebas en `tests/calcular-aguinaldo.test.js`.
+Validaciones que bloquean: salario vacío o ≤ 0, fechas inválidas, fecha de corte anterior a la antigüedad, días de aguinaldo vacíos ("Captura tus días de aguinaldo (mínimo 15).") o < 15 (mensaje del mínimo de ley).
+
+Implementación (ticket #9): la regla vive en una función interna `aguinaldoProporcional(antiguedad, hasta, diasAguinaldo, salarioDiario)` que usan `calcularAguinaldo` y `calcularFiniquito`; `calcularFiniquito` sigue devolviendo su aguinaldo sin `hasta`, `topado` ni `desdeAntiguedad` (su salida no cambió). Tras el code review se agregaron `topado` y `desdeAntiguedad` para que la página no duplique esas reglas. La validación del salario y el aviso de salario mínimo también son internos y compartidos (`validarSalario`), así que el aviso es el mismo texto en las dos calculadoras. Pruebas en `tests/calcular-aguinaldo.test.js`.
 
 ## Testing
 

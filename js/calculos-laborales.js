@@ -100,17 +100,24 @@ function validarSalario(salarioDiario, error, avisos) {
  * Aguinaldo proporcional (D4 / A1), la única implementación de la regla.
  * Días trabajados = del 1 de enero del año de `hasta` (o de la antigüedad, si es posterior) a `hasta`,
  * ambos incluidos, tope 365; divisor siempre 365. Recibe fechas ya validadas (números de día).
+ * `topado`: los días del periodo pasaban de 365 (año bisiesto completo) y se toparon.
+ * `desdeAntiguedad`: el conteo empieza en la fecha de antigüedad y no en el 1 de enero.
  */
 function aguinaldoProporcional(antiguedad, hasta, diasAguinaldo, salarioDiario) {
-  const desde = Math.max(aDia(partes(hasta).anio, 1, 1), antiguedad);
-  const diasTrabajados = Math.min(hasta - desde + 1, 365);
+  const primeroDeEnero = aDia(partes(hasta).anio, 1, 1);
+  const desde = Math.max(primeroDeEnero, antiguedad);
+  const diasPeriodo = hasta - desde + 1;
+  const diasTrabajados = Math.min(diasPeriodo, 365);
   const dias = (diasAguinaldo * diasTrabajados) / 365;
   return {
     diasAguinaldo,
     desde: aTexto(desde),
+    hasta: aTexto(hasta),
     diasTrabajados,
     dias,
     monto: redondear(dias * salarioDiario),
+    topado: diasPeriodo > 365,
+    desdeAntiguedad: antiguedad > primeroDeEnero,
   };
 }
 
@@ -201,6 +208,9 @@ export function calcularFiniquito({
     : null;
   const diasVacaciones = proporcionales + vacacionesPendientes;
 
+  // El aguinaldo del finiquito no expone `hasta` (es la fecha de baja) ni los datos de explicación.
+  const { hasta, topado, desdeAntiguedad, ...aguinaldo } =
+    aguinaldoProporcional(antiguedad, baja, diasAguinaldo, salarioDiario);
 
   const conceptos = {
     sueldoPendiente: {
@@ -225,7 +235,7 @@ export function calcularFiniquito({
       dias: diasVacaciones,
       monto: redondear((porcentajePrima / 100) * diasVacaciones * salarioDiario),
     },
-    aguinaldo: aguinaldoProporcional(antiguedad, baja, diasAguinaldo, salarioDiario),
+    aguinaldo,
   };
 
   const total = redondear(
@@ -260,12 +270,13 @@ export function calcularAguinaldo({
     error('fechaCorte', 'La fecha de «Calcular al» no puede ser anterior a tu fecha de antigüedad.');
   }
 
-  if (!esNumero(diasAguinaldo) || diasAguinaldo < MINIMOS_LEY.diasAguinaldo) {
+  if (!esNumero(diasAguinaldo)) {
+    error('diasAguinaldo', `Captura tus días de aguinaldo (mínimo ${MINIMOS_LEY.diasAguinaldo}).`);
+  } else if (diasAguinaldo < MINIMOS_LEY.diasAguinaldo) {
     error('diasAguinaldo', `Los días de aguinaldo no pueden ser menos de ${MINIMOS_LEY.diasAguinaldo}, el mínimo de ley.`);
   }
 
   if (errores.length > 0) return { valido: false, errores, avisos, aguinaldo: null };
 
-  const { desde, ...resto } = aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario);
-  return { valido: true, errores, avisos, aguinaldo: { desde, hasta: aTexto(corte), ...resto } };
+  return { valido: true, errores, avisos, aguinaldo: aguinaldoProporcional(antiguedad, corte, diasAguinaldo, salarioDiario) };
 }
