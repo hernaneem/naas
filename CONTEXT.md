@@ -20,6 +20,10 @@ _Avoid_: fecha de alta, fecha de contratación
 **Fecha de baja**:
 Último día de la relación laboral; hasta ahí se cuentan los proporcionales.
 
+**Fecha de corte**:
+Fecha hasta la que se cuenta el aguinaldo proporcional; en pantalla, "Calcular al". Por defecto, el 31 de diciembre del año en curso.
+_Avoid_: fecha de baja (quien usa la calculadora de aguinaldo puede seguir trabajando)
+
 **Salario diario**:
 Sueldo base por día. Si se captura mensual, se divide entre 30.
 _Avoid_: salario diario integrado (SDI), que es otra base y no se usa aquí
@@ -34,7 +38,7 @@ Parte de los días de vacaciones del año de servicio en curso que corresponde a
 Días de vacaciones de años de servicio anteriores que no se disfrutaron.
 
 **Aguinaldo proporcional**:
-Parte del aguinaldo anual que corresponde a los días trabajados en el año calendario de la baja.
+Parte del aguinaldo anual que corresponde a los días trabajados en el año calendario de la fecha de baja o de la fecha de corte.
 
 **Faltas**:
 Días no laborados sin justificación en el año calendario; se descuentan de los días trabajados para el aguinaldo proporcional.

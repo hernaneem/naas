@@ -48,6 +48,8 @@ calcularAguinaldo({
 
 Validaciones que bloquean: salario vacío o ≤ 0, fechas inválidas, fecha de corte anterior a la antigüedad, días de aguinaldo < 15.
 
+Implementación (ticket #9): la interfaz quedó igual. La regla vive en una función interna `aguinaldoProporcional(antiguedad, hasta, diasAguinaldo, salarioDiario)` que usan `calcularAguinaldo` y `calcularFiniquito`; `calcularFiniquito` sigue devolviendo su aguinaldo sin `hasta`. La validación del salario y el aviso de salario mínimo también son internos y compartidos (`validarSalario`), así que el aviso es el mismo texto en las dos calculadoras. Pruebas en `tests/calcular-aguinaldo.test.js`.
+
 ## Testing
 
 Seam: `calcularAguinaldo` con `node --test`. Casos: año completo (15 días exactos), ingreso a mitad de año, corte antes de diciembre, año bisiesto al 31 de diciembre (tope 365), antigüedad de años anteriores, días superiores, validaciones y aviso de salario mínimo, y que `calcularFiniquito` siga dando lo mismo (las pruebas existentes no cambian). UI verificada en navegador.
