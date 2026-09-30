@@ -11,7 +11,7 @@ Pago que corresponde a una persona trabajadora al terminar la relación laboral 
 _Avoid_: liquidación (la liquidación añade indemnización y es otro concepto)
 
 **Liquidación**:
-Finiquito más indemnización (3 meses + 20 días por año) cuando hay despido injustificado. Fuera de alcance por ahora.
+Finiquito más indemnización (3 meses de salario y, en algunos casos, 20 días por año) cuando hay despido injustificado. Fuera de alcance por ahora.
 
 **Fecha de antigüedad**:
 Fecha en que empezó la relación laboral; de ella se cuentan los años de servicio.
