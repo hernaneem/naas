@@ -4,7 +4,7 @@
 // Spec: docs/specs/2026-09-30-calculadora-aguinaldo.md
 import { calcularAguinaldo, MINIMOS_LEY } from './calculos-laborales.js';
 import {
-  $, fmtMonto, fmtDias, fmtNum, fmtFecha, hoyLocal, leerFechaIso, filaValor, nota, paso,
+  $, fmtMonto, fmtDias, fmtNum, fmtFecha, hoyLocal, leerFechaIso, filaValor, nota, paso, lineasAguinaldo,
   leerNumero, leerSueldo, pintarSueldo, pintarErrores, pintarDatosCapturados,
   pintarEstado, conectarFormulario, crearBarraTotal, conectarImpresion,
 } from './ui-calculadoras.js';
@@ -47,38 +47,25 @@ function leerEntrada() {
 
 // ---- Pintado del resultado ----
 
-const esBisiesto = (anio) => (anio % 4 === 0 && anio % 100 !== 0) || anio % 400 === 0;
-
-/** Del 1 de enero al 31 de diciembre de un año bisiesto son 366 días: el aguinaldo topa en 365. */
-function topoEnAnioBisiesto({ desde, hasta, diasTrabajados }) {
-  const inicio = leerFechaIso(desde);
-  const fin = leerFechaIso(hasta);
-  return diasTrabajados === 365 && esBisiesto(fin.anio) &&
-    inicio.mes === 1 && inicio.dia === 1 && fin.mes === 12 && fin.dia === 31;
-}
-
 function pintarComoSeCalculo(entrada, aguinaldo) {
-  const salarioDiario = fmtMonto(entrada.salarioDiario);
-  const origen = aguinaldo.diasAguinaldo > MINIMOS_LEY.diasAguinaldo ? 'lo que da tu empresa' : 'la ley';
-  const inicio = leerFechaIso(aguinaldo.desde);
-  const entroEsteAnio = !(inicio.mes === 1 && inicio.dia === 1);
+  const anio = leerFechaIso(aguinaldo.hasta).anio;
+  const formula = lineasAguinaldo(aguinaldo, entrada.salarioDiario, aguinaldo.diasAguinaldo > MINIMOS_LEY.diasAguinaldo);
 
+  const inicioConteo = aguinaldo.desdeAntiguedad
+    ? `Tu fecha de antigüedad cae en ${anio}, así que se cuenta desde esa fecha.`
+    : `Se cuenta desde el 1 de enero de ${anio}.`;
   const lineasDias = [
-    ['t', `${entroEsteAnio ? 'Entraste este año, así que se cuenta desde tu fecha de antigüedad.' : 'Se cuenta desde el 1 de enero.'} ` +
-      `Del ${fmtFecha(aguinaldo.desde)} al ${fmtFecha(aguinaldo.hasta)} van ${fmtNum(aguinaldo.diasTrabajados)} días, contando ambos.`],
+    ['t', `${inicioConteo} Del ${fmtFecha(aguinaldo.desde)} al ${fmtFecha(aguinaldo.hasta)} ` +
+      `van ${fmtNum(aguinaldo.diasTrabajados)} días, contando ambos.`],
   ];
-  if (topoEnAnioBisiesto(aguinaldo)) {
-    lineasDias.push(['t', `${leerFechaIso(aguinaldo.hasta).anio} tiene 366 días, pero el aguinaldo se calcula ` +
-      'sobre 365 como máximo.']);
+  if (aguinaldo.topado) {
+    lineasDias.push(['t', `${anio} tiene 366 días, pero el aguinaldo se calcula sobre 365 como máximo.`]);
   }
 
-  const lineasProporcion = [
-    ['t', `Según ${origen}, el aguinaldo del año completo es de ${fmtNum(aguinaldo.diasAguinaldo)} días.`],
-    ['f', `${fmtNum(aguinaldo.diasAguinaldo)} × ${fmtNum(aguinaldo.diasTrabajados)} ÷ 365 = ${fmtDias(aguinaldo.dias)} días`],
-  ];
+  const lineasProporcion = [['t', formula.origen], formula.dias];
 
   const lineasMonto = [
-    ['f', `${fmtDias(aguinaldo.dias)} días × ${salarioDiario} = ${fmtMonto(aguinaldo.monto)}`],
+    formula.monto,
     ['t', 'Los días se muestran con 2 decimales pero se calculan completos; el monto se redondea a centavos.'],
   ];
 
@@ -104,7 +91,7 @@ function pintarDatos(entrada, sueldo) {
 
 function pintarResultado(entrada, sueldo, resultado, erroresVisibles) {
   const hayResultado = resultado.valido;
-  pintarEstado({ hayResultado, erroresVisibles, vaciar: ['desglose', 'notas', 'comoSeCalculoCuerpo', 'datosCapturados'] });
+  pintarEstado({ hayResultado, erroresVisibles });
   mostrarTotal(hayResultado ? fmtMonto(resultado.aguinaldo.monto) : null);
   if (!hayResultado) return;
 
