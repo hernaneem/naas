@@ -6,3 +6,4 @@ exclude:
   - CLAUDE.md
   - CONTEXT.md
   - README.md
+  - "NaaS Info"  # brief, precios internos y tokens: no son públicos
