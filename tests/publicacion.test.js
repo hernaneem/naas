@@ -11,7 +11,7 @@ test('_config.yml excluye la carpeta interna "NaaS Info" (precios.yaml, brief, t
 });
 
 test('_config.yml sigue excluyendo docs, pruebas y archivos del repo', () => {
-  for (const e of ['docs/', 'tests/', 'CLAUDE.md', 'CONTEXT.md', 'README.md', 'package.json']) {
+  for (const e of ['docs/', 'tests/', 'leads/', 'CLAUDE.md', 'CONTEXT.md', 'README.md', 'package.json']) {
     assert.ok(excluidos.includes(e), `falta ${e}`);
   }
 });

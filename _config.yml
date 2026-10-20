@@ -1,6 +1,7 @@
 # GitHub Pages (Jekyll): archivos del repo que no se publican en nominaas.com.
 exclude:
   - package.json
+  - leads/  # la función de leads vive en Vercel
   - tests/
   - docs/
   - CLAUDE.md
