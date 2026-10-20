@@ -129,6 +129,12 @@ describe('Notion: mapeo y cliente', () => {
     assert.deepEqual(solicitud[1].headers, { Authorization: 'Bearer secret', 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' });
     assert.deepEqual(JSON.parse(solicitud[1].body), { parent: { database_id: 'db-1' }, properties: propiedadesNotion(lead) });
   });
+  test('la llamada a Notion lleva un tope de tiempo para no colgar el formulario', async () => {
+    let solicitud;
+    const crear = crearCreadorDeLeads({ token: 'secret', databaseId: 'db-1', fetch: async (...args) => { solicitud = args; return { ok: true, status: 200 }; } });
+    await crear(lead);
+    assert.ok(solicitud[1].signal instanceof AbortSignal);
+  });
   test('error 400 de Notion lanza mensaje con status y code', async () => {
     const crear = crearCreadorDeLeads({ token: 'secret', databaseId: 'db-1', fetch: async () => ({ ok: false, status: 400, json: async () => ({ code: 'validation_error' }) }) });
     await assert.rejects(crear(lead), /400.*validation_error/);

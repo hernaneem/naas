@@ -26,6 +26,7 @@ export function crearCreadorDeLeads({ token, databaseId, fetch: fetchNativo }) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ parent: { database_id: databaseId }, properties: propiedadesNotion(lead) }),
+      signal: AbortSignal.timeout(8000), // si Notion no responde, el formulario muestra el error en vez de quedarse esperando
     });
     if (respuesta.ok) return;
     let codigo = '';
