@@ -73,3 +73,13 @@ Porción de un concepto que sí paga ISR. Sueldo pendiente y vacaciones gravan c
 
 **Sueldo del periodo**:
 Salario diario × días del periodo de nómina (7 semanal, 15 quincenal, 30.4 mensual). Es la base ordinaria contra la que se mide el ISR de lo extraordinario.
+
+### Captación
+
+**Lead**:
+Persona que dejó sus datos en el formulario de nominaas.com pidiendo que NaaS la contacte. Aún no está calificada.
+_Avoid_: prospecto, cliente (un prospecto ya está en CRM NaaS)
+
+**Leads web**:
+Base de Notion (NaaS → Leads) donde cae cada lead con Estado Nuevo; la bandeja que Hernán califica antes de pasar un lead a CRM NaaS.
+_Avoid_: CRM
