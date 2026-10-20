@@ -6,7 +6,7 @@ const ORIGENES_PERMITIDOS = new Set([
   'http://localhost:8000',
 ]);
 const ORDEN_CAMPOS = ['empresa', 'nombre', 'correo', 'whatsapp', 'colaboradores', 'mensaje', 'pagina', 'utm'];
-const LONGITUDES = { empresa: 150, nombre: 100, correo: 254, mensaje: 2000, pagina: 200, utm: 300 };
+export const LONGITUDES = Object.freeze({ empresa: 150, nombre: 100, correo: 254, whatsapp: 30, mensaje: 2000, pagina: 200, utm: 300 });
 const encabezadosJson = { 'Content-Type': 'application/json; charset=utf-8' };
 
 function respuesta(status, headers, body) {
@@ -66,7 +66,8 @@ export async function manejarLead({ metodo, origen, cuerpo }, { crearLead }) {
   } catch (error) {
     const mensaje = error instanceof Error ? error.message : String(error);
     const resumen = mensaje.match(/notion\s+(\d{3})(?:\s+([a-z_]+))?/i);
-    console.error(resumen ? `notion ${resumen[1]}${resumen[2] ? ` ${resumen[2]}` : ''}` : 'Error al crear lead en Notion');
+    const nombreError = error instanceof Error && /^[A-Za-z][A-Za-z0-9]*$/.test(error.name) ? error.name : 'Error';
+    console.error(resumen ? `notion ${resumen[1]}${resumen[2] ? ` ${resumen[2]}` : ''}` : nombreError);
     return respuesta(502, headers, { ok: false, error: 'notion' });
   }
 }

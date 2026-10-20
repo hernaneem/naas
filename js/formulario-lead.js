@@ -1,11 +1,11 @@
-import { armarMailto, armarUtm, validarLead } from './lead-validacion.js?v=20261020';
+import { armarMailto, armarUtm, LONGITUDES, validarLead } from './lead-validacion.js?v=20261020b';
 
 const API_LEAD = 'https://naas-leads.vercel.app/api/lead';
 const MENSAJES_ERROR = {
   nombre: 'Escribe tu nombre.',
   empresa: 'Escribe el nombre de tu empresa.',
   correo: 'Escribe un correo válido, por ejemplo ana@empresa.com.',
-  whatsapp: 'Escribe tu WhatsApp con lada, por ejemplo 55 1234 5678.',
+  whatsapp: 'Escribe un WhatsApp de 10 a 15 dígitos (máximo 30 caracteres).',
   colaboradores: 'Selecciona un rango de colaboradores.',
   mensaje: 'Escribe un mensaje de máximo 2000 caracteres.',
 };
@@ -56,29 +56,25 @@ if (formulario) {
     pintarError(nombre, validarLead(datosFormulario()).includes(nombre));
   });
 
-  formulario.addEventListener('input', (evento) => {
+  function revalidarAlCambiar(evento) {
     const nombre = evento.target.name;
     if (tocados.has(nombre)) pintarError(nombre, validarLead(datosFormulario()).includes(nombre));
-  });
-
-  formulario.addEventListener('change', (evento) => {
-    const nombre = evento.target.name;
-    if (tocados.has(nombre)) pintarError(nombre, validarLead(datosFormulario()).includes(nombre));
-  });
+  }
+  formulario.addEventListener('input', revalidarAlCambiar);
+  formulario.addEventListener('change', revalidarAlCambiar);
 
   formulario.addEventListener('submit', async (evento) => {
     evento.preventDefault();
     const datos = {
       ...datosFormulario(),
       // recortados al límite del servidor: una URL de campaña larga no debe impedir el envío
-      pagina: (window.location.pathname === '/index.html' ? '/' : (window.location.pathname || '/')).slice(0, 200),
-      utm: armarUtm(window.location.search).slice(0, 300),
+      pagina: (window.location.pathname === '/index.html' ? '/' : (window.location.pathname || '/')).slice(0, LONGITUDES.pagina),
+      utm: armarUtm(window.location.search).slice(0, LONGITUDES.utm),
     };
     const invalidos = validarYMostrar(datos);
     if (invalidos.size) {
       const primero = campos.find((campo) => invalidos.has(campo));
       if (primero) formulario.elements.namedItem(primero)?.focus();
-      else mostrarAlerta('No pudimos validar el origen de la solicitud. Revisa la dirección e inténtalo de nuevo.');
       return;
     }
 
@@ -102,7 +98,7 @@ if (formulario) {
         confirmacion.setAttribute('role', 'status');
         confirmacion.setAttribute('tabindex', '-1');
         const titulo = document.createElement('h3');
-        titulo.textContent = `¡Gracias, ${datos.nombre.trim()}! Te contactaremos en menos de un día hábil.`;
+        titulo.textContent = `¡Gracias, ${datos.nombre.trim()}! Te contactaremos muy pronto.`;
         const agenda = document.createElement('a');
         agenda.className = 'btn-primary btn-primary-lg';
         agenda.href = 'https://cal.com/hernaneem/reunion-naas';
@@ -119,12 +115,12 @@ if (formulario) {
         const resultado = await respuesta.json().catch(() => ({}));
         const recibidos = Array.isArray(resultado.campos) ? resultado.campos : [];
         if (!recibidos.length) {
-          mostrarAlerta('Revisa tus datos e inténtalo de nuevo.');
+          mostrarFalla(datos);
         } else {
           for (const campo of campos) pintarError(campo, recibidos.includes(campo));
           const primero = campos.find((campo) => recibidos.includes(campo));
           if (primero) formulario.elements.namedItem(primero)?.focus();
-          else mostrarAlerta('Revisa tus datos e inténtalo de nuevo.');
+          else mostrarFalla(datos);
         }
       } else {
         mostrarFalla(datos);
@@ -139,24 +135,30 @@ if (formulario) {
     }
   });
 
-  function mostrarAlerta(texto, href) {
-    const alerta = document.createElement('p');
-    alerta.className = 'lead-alerta';
-    alerta.setAttribute('role', 'alert');
-    if (href) {
-      alerta.append(document.createTextNode('No pudimos enviar tus datos. Escríbenos a '));
-      const enlace = document.createElement('a');
-      enlace.href = href;
-      enlace.textContent = 'hernan@nominaas.com';
-      alerta.append(enlace);
-    } else {
-      alerta.textContent = texto;
-    }
+  function insertarAlerta(alerta) {
     formulario.querySelector('.lead-alerta')?.remove();
     boton.insertAdjacentElement('afterend', alerta);
   }
 
+  function mostrarAlerta(texto) {
+    const alerta = crearAlertaTexto(texto);
+    insertarAlerta(alerta);
+  }
+
   function mostrarFalla(datos) {
-    mostrarAlerta('', armarMailto(datos));
+    const alerta = crearAlertaTexto('No pudimos enviar tus datos. Escríbenos a ');
+    const enlace = document.createElement('a');
+    enlace.href = armarMailto(datos);
+    enlace.textContent = 'hernan@nominaas.com';
+    alerta.append(enlace);
+    insertarAlerta(alerta);
+  }
+
+  function crearAlertaTexto(texto) {
+    const alerta = document.createElement('p');
+    alerta.className = 'lead-alerta';
+    alerta.setAttribute('role', 'alert');
+    alerta.textContent = texto;
+    return alerta;
   }
 }

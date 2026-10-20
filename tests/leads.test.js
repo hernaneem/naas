@@ -102,6 +102,20 @@ describe('manejarLead: validación y creación', () => {
       assert.ok(!errores.join(' ').includes('Ana Pérez'));
     } finally { console.error = original; }
   });
+  test('error de creación sin diagnóstico Notion registra solo el nombre del error', async () => {
+    const errores = [];
+    const original = console.error;
+    console.error = (...args) => errores.push(args.join(' '));
+    try {
+      const error = new Error('falló para Ana Pérez ana@example.com');
+      error.name = 'TimeoutError';
+      const r = await manejarLead({ metodo: 'POST', origen, cuerpo: leadValido }, { crearLead: async () => { throw error; } });
+      assert.equal(r.status, 502);
+      assert.ok(errores.join(' ').includes('TimeoutError'));
+      assert.ok(!errores.join(' ').includes('Ana Pérez'));
+      assert.ok(!errores.join(' ').includes('ana@example.com'));
+    } finally { console.error = original; }
+  });
   test('todas las respuestas con cuerpo declaran JSON UTF-8', async () => {
     const r = await manejarLead({ metodo: 'GET', origen, cuerpo: null }, { crearLead() {} });
     assert.equal(r.headers['Content-Type'], 'application/json; charset=utf-8');

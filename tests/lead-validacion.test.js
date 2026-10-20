@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { manejarLead, RANGOS_COLABORADORES as rangosServidor } from '../leads/lib/manejar-lead.js';
+import * as reglasServidor from '../leads/lib/manejar-lead.js';
 
 const modulo = () => import('../js/lead-validacion.js');
 const valido = {
@@ -64,21 +65,37 @@ test('armarMailto codifica asunto y cuerpo con los datos capturados', async () =
 });
 
 test('las reglas y los rangos del navegador coinciden con manejarLead', async () => {
-  const { validarLead, RANGOS_COLABORADORES } = await modulo();
+  const { validarLead, RANGOS_COLABORADORES, LONGITUDES } = await modulo();
   assert.deepEqual(RANGOS_COLABORADORES, rangosServidor);
+  assert.deepEqual(LONGITUDES, reglasServidor.LONGITUDES);
+  assert.equal(LONGITUDES.whatsapp, 30);
+  const whatsappTreintaYUno = '(1 2 3 4 5 6 7 8 9 0 1 2 3 4 5)';
+  assert.equal(whatsappTreintaYUno.length, 31);
   const casos = [
     valido,
     { ...valido, empresa: '' },
+    { ...valido, correo: 'ana@invalido' },
     { ...valido, nombre: 'N'.repeat(101) },
     { ...valido, correo: 'x'.repeat(250) + '@a.com' },
-    { ...valido, whatsapp: '+52 (55) 1234-5678' },
+    { ...valido, whatsapp: '123456789' },
+    { ...valido, whatsapp: '12345abcde' },
+    { ...valido, whatsapp: whatsappTreintaYUno },
     { ...valido, colaboradores: '1-50' },
     { ...valido, mensaje: 'x'.repeat(2001) },
+    { ...valido, empresa: 4 },
+    { ...valido, mensaje: null },
+    { ...valido, pagina: 5 },
+    { ...valido, utm: null },
+    { ...valido, empresa: 'E'.repeat(LONGITUDES.empresa + 1) },
+    { ...valido, pagina: 'p'.repeat(LONGITUDES.pagina + 1) },
+    { ...valido, utm: 'u'.repeat(LONGITUDES.utm + 1) },
+    { ...valido, empresa: 'E'.repeat(LONGITUDES.empresa), pagina: 'p'.repeat(LONGITUDES.pagina), utm: 'u'.repeat(LONGITUDES.utm) },
+    { ...valido, empresa: '', correo: 'incorrecto', whatsapp: 'abc', colaboradores: 'ninguno', pagina: 'p'.repeat(LONGITUDES.pagina + 1) },
   ];
   for (const datos of casos) {
     const respuesta = await manejarLead({
       metodo: 'POST', origen: 'https://nominaas.com',
-      cuerpo: { ...datos, pagina: '/', utm: '' },
+      cuerpo: { pagina: '/', utm: '', ...datos },
     }, { crearLead: async () => {} });
     const servidor = respuesta.status === 201 ? [] : respuesta.body.campos;
     assert.deepEqual(validarLead(datos), servidor, JSON.stringify(datos));

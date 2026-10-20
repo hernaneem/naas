@@ -1,7 +1,7 @@
 export const RANGOS_COLABORADORES = Object.freeze(['1–50', '51–200', '201–1000', 'Más de 1000']);
 
 const ORDEN_CAMPOS = ['empresa', 'nombre', 'correo', 'whatsapp', 'colaboradores', 'mensaje', 'pagina', 'utm'];
-const LONGITUDES = Object.freeze({ empresa: 150, nombre: 100, correo: 254, mensaje: 2000, pagina: 200, utm: 300 });
+export const LONGITUDES = Object.freeze({ empresa: 150, nombre: 100, correo: 254, whatsapp: 30, mensaje: 2000, pagina: 200, utm: 300 });
 
 /** Devuelve, en el orden del contrato del servidor, los campos que no pasan validación. */
 export function validarLead(datos = {}) {
