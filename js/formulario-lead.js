@@ -2,10 +2,10 @@ import { armarMailto, armarUtm, validarLead } from './lead-validacion.js?v=20261
 
 const API_LEAD = 'https://naas-leads.vercel.app/api/lead';
 const MENSAJES_ERROR = {
-  nombre: 'Escribe tu nombre (máximo 100 caracteres).',
-  empresa: 'Escribe el nombre de tu empresa (máximo 150 caracteres).',
-  correo: 'Escribe un correo válido, por ejemplo ana@empresa.com (máximo 254 caracteres).',
-  whatsapp: 'Escribe un WhatsApp con lada y de 10 a 15 dígitos; puedes usar espacios, guiones y paréntesis.',
+  nombre: 'Escribe tu nombre.',
+  empresa: 'Escribe el nombre de tu empresa.',
+  correo: 'Escribe un correo válido, por ejemplo ana@empresa.com.',
+  whatsapp: 'Escribe tu WhatsApp con lada, por ejemplo 55 1234 5678.',
   colaboradores: 'Selecciona un rango de colaboradores.',
   mensaje: 'Escribe un mensaje de máximo 2000 caracteres.',
 };
@@ -70,8 +70,9 @@ if (formulario) {
     evento.preventDefault();
     const datos = {
       ...datosFormulario(),
-      pagina: window.location.pathname === '/index.html' ? '/' : (window.location.pathname || '/'),
-      utm: armarUtm(window.location.search),
+      // recortados al límite del servidor: una URL de campaña larga no debe impedir el envío
+      pagina: (window.location.pathname === '/index.html' ? '/' : (window.location.pathname || '/')).slice(0, 200),
+      utm: armarUtm(window.location.search).slice(0, 300),
     };
     const invalidos = validarYMostrar(datos);
     if (invalidos.size) {
