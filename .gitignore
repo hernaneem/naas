@@ -3,3 +3,7 @@ NAASV2/
 
 # macOS
 .DS_Store
+
+# Variables locales y configuración de Vercel: nunca al repo
+.env*
+.vercel

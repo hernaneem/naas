@@ -1,0 +1,180 @@
+.cta-section .lead-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1rem 1rem;
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.lead-field {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.lead-field-wide,
+.lead-submit-wrap,
+.lead-privacidad {
+    grid-column: 1 / -1;
+}
+
+.lead-field label {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.lead-field label span {
+    color: #d8e2f1;
+    font-weight: 400;
+}
+
+.lead-field input,
+.lead-field select,
+.lead-field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.72rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    border-radius: var(--radius-sm);
+    background: rgba(8, 21, 42, 0.62);
+    color: var(--text-light);
+    font: inherit;
+    font-size: 1rem;
+}
+
+.lead-field select option {
+    background: var(--primary);
+    color: var(--text-light);
+}
+
+.lead-field textarea {
+    min-height: 112px;
+    resize: vertical;
+}
+
+.lead-field input::placeholder,
+.lead-field textarea::placeholder {
+    color: #d8e2f1;
+    opacity: 0.78;
+}
+
+.lead-field input:focus-visible,
+.lead-field select:focus-visible,
+.lead-field textarea:focus-visible,
+.lead-form button:focus-visible,
+.lead-confirmacion a:focus-visible,
+.lead-privacidad a:focus-visible {
+    outline: 3px solid #ffd0bd;
+    outline-offset: 3px;
+}
+
+.lead-field [aria-invalid="true"] {
+    border-color: #ffb4a0;
+}
+
+.lead-error {
+    color: #ffd0bd;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.lead-submit-wrap {
+    margin-top: 0.25rem;
+}
+
+.cta-section .lead-form .btn-primary {
+    min-height: 52px;
+    width: 100%;
+    padding: 0.85rem 1.4rem;
+    font: 600 1.05rem var(--font-sans);
+}
+
+.lead-form button:disabled {
+    cursor: wait;
+    opacity: 0.78;
+    transform: none;
+}
+
+.lead-privacidad {
+    margin: 0 !important;
+    color: #e3eaf4 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    text-align: center;
+}
+
+.lead-privacidad a {
+    color: var(--text-light);
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.lead-alerta {
+    grid-column: 1 / -1;
+    margin: 0 !important;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ffb4a0;
+    border-radius: var(--radius-sm);
+    background: rgba(92, 27, 20, 0.72);
+    color: #fff0eb !important;
+    font-size: 0.98rem !important;
+    text-align: left;
+}
+
+.lead-alerta a {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
+}
+
+.lead-confirmacion {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+}
+
+.lead-confirmacion h3 {
+    max-width: 34rem;
+    color: var(--text-light);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.25;
+}
+
+.lead-confirmacion .btn-primary {
+    min-height: 52px;
+}
+
+.lead-honeypot {
+    position: absolute;
+    inset-inline-start: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+@media (max-width: 600px) {
+    .cta-section .lead-form {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.95rem;
+    }
+
+    .lead-field-wide,
+    .lead-submit-wrap,
+    .lead-privacidad {
+        grid-column: auto;
+    }
+}
+
+@media (forced-colors: active) {
+    .lead-field input:focus-visible,
+    .lead-field select:focus-visible,
+    .lead-field textarea:focus-visible,
+    .lead-form button:focus-visible,
+    .lead-confirmacion a:focus-visible,
+    .lead-privacidad a:focus-visible {
+        outline-color: Highlight;
+    }
+}

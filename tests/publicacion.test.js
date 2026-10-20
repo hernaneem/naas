@@ -11,7 +11,16 @@ test('_config.yml excluye la carpeta interna "NaaS Info" (precios.yaml, brief, t
 });
 
 test('_config.yml sigue excluyendo docs, pruebas y archivos del repo', () => {
-  for (const e of ['docs/', 'tests/', 'CLAUDE.md', 'CONTEXT.md', 'README.md', 'package.json']) {
+  for (const e of ['docs/', 'tests/', 'leads/', 'CLAUDE.md', 'CONTEXT.md', 'README.md', 'package.json']) {
     assert.ok(excluidos.includes(e), `falta ${e}`);
+  }
+});
+
+test('inicio, precios y partners publican el formulario de leads y el aviso', () => {
+  for (const pagina of ['index.html', 'precios.html', 'partners.html']) {
+    const html = readFileSync(new URL(`../${pagina}`, import.meta.url), 'utf8');
+    assert.match(html, /id="formulario-lead"/, `${pagina}: falta formulario`);
+    assert.match(html, /name="sitio_web"/, `${pagina}: falta honeypot`);
+    assert.match(html, /href="aviso-privacidad\.html"/, `${pagina}: falta enlace al aviso`);
   }
 });

@@ -10,6 +10,7 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="leads.css?v=20261020b">
 </head>
 <body>
     <!-- Header -->
@@ -533,8 +534,47 @@
         <section id="contact" class="section-dark cta-section">
             <div class="container">
                 <h2>Listo para modernizar tu nomina?</h2>
-                <p>Unete a las empresas que ya simplificaron su nomina con NaaS. Agenda una demo personalizada con nuestro equipo.</p>
-                <a href="https://cal.com/hernaneem/reunion-naas" class="btn-primary btn-primary-lg" target="_blank">Solicita una Demo Gratis</a>
+                <p>Cuéntanos sobre tu empresa y nuestro equipo te contactará para conocer tus necesidades de nómina.</p>
+                <form id="formulario-lead" class="lead-form" novalidate>
+                    <div class="lead-field">
+                        <label for="lead-nombre">Nombre</label>
+                        <input id="lead-nombre" name="nombre" type="text" autocomplete="name" maxlength="100" required>
+                    </div>
+                    <div class="lead-field">
+                        <label for="lead-empresa">Empresa</label>
+                        <input id="lead-empresa" name="empresa" type="text" autocomplete="organization" maxlength="150" required>
+                    </div>
+                    <div class="lead-field">
+                        <label for="lead-correo">Correo de trabajo</label>
+                        <input id="lead-correo" name="correo" type="email" autocomplete="email" maxlength="254" required>
+                    </div>
+                    <div class="lead-field">
+                        <label for="lead-whatsapp">WhatsApp</label>
+                        <input id="lead-whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" required>
+                    </div>
+                    <div class="lead-field lead-field-wide">
+                        <label for="lead-colaboradores">Número de colaboradores</label>
+                        <select id="lead-colaboradores" name="colaboradores" required>
+                            <option value="">Selecciona</option>
+                            <option value="1–50">1–50</option>
+                            <option value="51–200">51–200</option>
+                            <option value="201–1000">201–1000</option>
+                            <option value="Más de 1000">Más de 1000</option>
+                        </select>
+                    </div>
+                    <div class="lead-field lead-field-wide">
+                        <label for="lead-mensaje">Mensaje <span>(opcional)</span></label>
+                        <textarea id="lead-mensaje" name="mensaje" maxlength="2000"></textarea>
+                    </div>
+                    <div class="lead-honeypot" aria-hidden="true">
+                        <label for="lead-sitio-web">No llenar este campo</label>
+                        <input id="lead-sitio-web" name="sitio_web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+                    </div>
+                    <div class="lead-submit-wrap">
+                        <button class="btn-primary btn-primary-lg" type="submit">Quiero que me contacten</button>
+                    </div>
+                    <p class="lead-privacidad">Al enviar aceptas nuestro <a href="aviso-privacidad.html">aviso de privacidad</a>.</p>
+                </form>
                 <div class="cta-contact-info">
                     <p>O escribenos a <a href="mailto:hernan@nominaas.com">hernan@nominaas.com</a></p>
                 </div>
@@ -592,5 +632,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module" src="js/formulario-lead.js?v=20261020b"></script>
 </body>
 </html>
